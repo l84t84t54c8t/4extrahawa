@@ -5,7 +5,7 @@ from pyrogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                             InputTextMessageContent)
 
 ######################
-LOG = -1002038090920
+LOG = -1002105278394
 ######################
 
 
@@ -16,14 +16,14 @@ async def startmsg(app, message):
 
 ❓ چۆن چرپە بەکاربێنم :
 
-`@IQMCBOT سلاو @IQ7amo`
-`@IQMCBOT سلاو @all`
+`@HawalmusicBot سلاو @Hawaallll`
+`@HawalmusicBot سلاو @all`
 
 **""".format(
         message.from_user.mention
     )
     key = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("تاقیکردنەوە", switch_inline_query="سلاو @IQ7amo")]]
+        [[InlineKeyboardButton("تاقیکردنەوە", switch_inline_query="سلاو @Hawaallll")]]
     )
     await message.reply(text, reply_markup=key, quote=True)
 
@@ -60,7 +60,7 @@ async def whisper(app, iquery):
         results=[
             InlineQueryResultArticle(
                 title=f"📪 چرپەنامەیەكت نارد بۆ {username}",
-                url="http://t.me/MGIMT",
+                url="http://t.me/Haawall",
                 input_message_content=InputTextMessageContent(
                     message_text=text, parse_mode=enums.ParseMode.MARKDOWN
                 ),
@@ -76,18 +76,18 @@ async def whisper(app, query):
     text = """**
 ❓ چۆن چرپە بەکاربێنم :
 
-`@IQMCBOT سلاو @IQ7amo`
-`@IQMCBOT سلاو @all`
+`@HawalmusicBot سلاو @Hawaallll`
+`@HawalmusicBot سلاو @all`
 
 **"""
     await query.answer(
         results=[
             InlineQueryResultPhoto(
                 title="🔒 چرپەنامە لەگەڵ + یوزەر",
-                photo_url="https://t.me/IQ7amo",
-                description="@IQMCBOT hi @IQ7amo",
+                photo_url="https://t.me/Hawaallll",
+                description="@HawalmusicBot hi @Hawaallll",
                 reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("🔗", url="t.me/MGIMT")]]
+                    [[InlineKeyboardButton("🔗", url="t.me/Haawall")]]
                 ),
                 input_message_content=InputTextMessageContent(text),
             ),
@@ -161,7 +161,7 @@ async def del_whisper(app, query):
 
     else:
         reply_markup = InlineKeyboardMarkup(
-            [[InlineKeyboardButton("خاوەنی بۆت 🔗", url="https://t.me/IQ7amo")]]
+            [[InlineKeyboardButton("خاوەنی بۆت 🔗", url="https://t.me/Hawaallll")]]
         )
         await query.edit_message_text(
             f"**🗑️ چرپەنامە سڕدرایەوە لەلایەن : ( {query.from_user.mention} ) .**",
@@ -181,6 +181,6 @@ __HELP__ = """
 - Iғ ʏᴏᴜ ᴜsᴇ ᴛʜᴇ ᴡᴏʀᴅ « Aʟʟ » ɪɴsᴛᴇᴀᴅ ᴏғ ᴛʜᴇ ᴜsᴇʀɴᴀᴍᴇ, ᴛʜᴇ ᴍᴇssᴀɢᴇ ɪs ғᴏʀ ᴀʟʟ ɢʀᴏᴜᴘ ᴍᴇᴍʙᴇʀs
 
 **ᴇxᴀᴍᴘʟᴇ : **
-- @IQMCBOT Hɪ Bʀᴏ @IQ7amo
-- @IQMCBOT Hɪ Gᴜʏs all
+- @HawalmusicBot Hɪ Bʀᴏ @Hawaallll
+- @HawalmusicBot Hɪ Gᴜʏs all
 """
