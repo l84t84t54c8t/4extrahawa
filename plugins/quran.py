@@ -27,7 +27,7 @@ async def quran(c, msg):
     video = f"https://telegra.ph/file/39ee458993b40a8a9a9b9.mp4"
     await msg.reply_video(
         video=video,
-        caption=f"**◗⋮◖ [⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝘼𝙇𝙄𝙉𝘼 - پەخشی قورئان](t.me/MGIMT)\n⋆┄─┄─┄─┄─┄─┄─┄─┄⋆\n◗⋮◖ بەخێربێی ئەزیزم {msg.from_user.mention}\n◗⋮◖ بۆ بەشی پەخشکردنی قورئانی پیرۆز**",
+        caption=f"**◗⋮◖ [⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙃𝙖𝙬𝙖𝙡 - پەخشی قورئان](t.me/Haawall)\n⋆┄─┄─┄─┄─┄─┄─┄─┄⋆\n◗⋮◖ بەخێربێی ئەزیزم {msg.from_user.mention}\n◗⋮◖ بۆ بەشی پەخشکردنی قورئانی پیرۆز**",
         reply_markup=ikm(keyboard),
     )
 
@@ -123,7 +123,7 @@ async def show_quran(c, cq):
     await app.send_audio(
         cq.message.chat.id,
         f"{name}.mp3",
-        f"**◗⋮◖ سوڕەتی {name}\n◗⋮◖ بە دەنگی {per_name}\n◗⋮◖ گەشەپێدەر : @IQ7amo**",
+        f"**◗⋮◖ سوڕەتی {name}\n◗⋮◖ بە دەنگی {per_name}\n◗⋮◖ گەشەپێدەر : @Hawaallll**",
         reply_markup=ikm([[ikb("• پەخشکردن •", callback_data=f"done-{number}-{i}")]]),
     )
 
