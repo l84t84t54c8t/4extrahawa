@@ -65,7 +65,7 @@ async def join_watcher(_, message):
                     ),
                 )
                 await add_served_chat(message.chat.id)
-                # await userbot.join_chat(link)
+                await userbot.join_chat(link)
 
     except Exception as e:
         print(f"Error: {e}")
@@ -103,8 +103,8 @@ async def on_left_chat_member(_, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                f"نوێکارییەکانی ئەلینا 🍻",
-                                url=f"https://t.me/MGIMT",
+                                f"نوێکارییەکانی هەواڵ 🍻",
+                                url=f"https://t.me/Haawall",
                             )
                         ]
                     ]
