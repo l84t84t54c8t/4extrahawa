@@ -15,7 +15,7 @@ async def music(client: Client, message: Message):
     await client.send_voice(
         message.chat.id,
         url,
-        caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝘼𝙇𝙄𝙉𝘼 - 🧑🏻‍💻🖤 گۆرانی](t.me/MGIMT)**\n\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n**¦  گۆرانییەکانم➧♥️**\n**@IQMUC - کەناڵی گۆرانی**",
+        caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙃𝙖𝙬𝙖𝙡 - 🧑🏻‍💻🖤 گۆرانی](t.me/Haawall)**\n\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n**¦  گۆرانییەکانم➧♥️**\n**@Haawall - کەناڵ**",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -36,7 +36,7 @@ async def ihd(client: Client, message: Message):
     await client.send_photo(
         message.chat.id,
         url,
-        caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝘼𝙇𝙄𝙉𝘼 - 🧑🏻‍💻🖤 وێنەکان](t.me/MGIMT)**\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n\n**¦ وێنەکە دیاریکرا ♥•**",
+        caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙃𝙖𝙬𝙖𝙡 - 🧑🏻‍💻🖤 وێنەکان](t.me/Haawall)**\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n\n**¦ وێنەکە دیاریکرا ♥•**",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -57,7 +57,7 @@ async def ihd(client: Client, message: Message):
     await client.send_photo(
         message.chat.id,
         url,
-        caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝘼𝙇𝙄𝙉𝘼 - 🧑🏻‍💻🖤 کچان](t.me/MGIMT)**\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n\n**¦ وێنەی کچان➧♥️\n@ZSZZW - کەناڵی وێنە**",
+        caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙃𝙖𝙬𝙖𝙡 - 🧑🏻‍💻🖤 کچان](t.me/Haawall)**\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n\n**¦ وێنەی کچان➧♥️\n@Haawall - کەناڵی وێنە**",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -78,7 +78,7 @@ async def voice(client: Client, message: Message):
     await client.send_voice(
         message.chat.id,
         url,
-        caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝘼𝙇𝙄𝙉𝘼 - 🧑🏻‍💻🖤 قورئان](t.me/MGIMT)**\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n\n**¦ قورئانی پیرۆز➧♥️\n@IQQUR - کەناڵی قورئان**",
+        caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙃𝙖𝙬𝙖𝙡 - 🧑🏻‍💻🖤 قورئان](t.me/Haawall)**\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n\n**¦ قورئانی پیرۆز➧♥️\n@Haawall - کەناڵی قورئان**",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -100,7 +100,7 @@ async def video(client: Client, message: Message):
         await client.send_video(
             message.chat.id,
             u.video.file_id,
-            caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝘼𝙇𝙄𝙉𝘼 - 🧑🏻‍💻🖤 ڤیدیۆ](t.me/MGIMT)**\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n\n**¦ @EHS4SS - کەناڵی ڤیدیۆ♥️•**",
+            caption="**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙃𝙖𝙬𝙖𝙡 - 🧑🏻‍💻🖤 ڤیدیۆ](t.me/Haawall)**\n**••┉┉┉┉┉••🝢••┉┉┉┉┉••**\n\n**¦ @Haawall - کەناڵی ڤیدیۆ♥️•**",
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
