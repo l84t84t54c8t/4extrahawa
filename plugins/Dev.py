@@ -17,7 +17,7 @@ async def huhh(client: Client, message: Message):
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("H𝐀𝐖𝐀𝐋 ʲ ↱ˡⁱᶠᵉ↰🐍", user_id=OWNER_ID"),
+                    InlineKeyboardButton("H𝐀𝐖𝐀𝐋 ʲ ↱ˡⁱᶠᵉ↰🐍", url=f"https://t.me/Hawaallll"),
                 ],
                 [
                     InlineKeyboardButton("𐇮 ﮼ﺣ‌ّــەمــە 🇧🇷 𐇮", url=f"https://t.me/IQ7amo"),
