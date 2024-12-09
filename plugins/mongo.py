@@ -12,7 +12,6 @@ from pyrogram.types import Message
 
 MONGO_DB_URI = os.getenv("MONGO_DB_URI")
 
-OWNER_ID2 = "833360381"
 @app.on_message(filters.command("mongochk"))
 async def mongo_check_command(client, message: Message):
     if len(message.command) < 2:
@@ -83,7 +82,7 @@ def list_databases_and_collections(client):
 
 @app.on_message(
     filters.command(["deletedb", "deletedatabase", "deldb", "deldatabase"])
-    & filters.user(OWNER_ID2)
+    & SUDOERS
 )
 async def delete_db_command(client, message: Message):
     try:
@@ -274,7 +273,7 @@ def restore_data_to_new_mongo(new_client, backup_data):
     filters.command(
         ["transferdb", "copydb", "paste", "copydatabase", "transferdatabase"]
     )
-    & filters.user(OWNER_ID)
+    & SUDOERS
 )
 async def transfer_db_command(client, message: Message):
     try:
@@ -311,7 +310,7 @@ async def transfer_db_command(client, message: Message):
 # ================DOWNLOAD-DATA===================
 
 
-@app.on_message(filters.command("downloaddata") & filters.user(OWNER_ID))
+@app.on_message(filters.command("downloaddata") & SUDOERS)
 async def download_data_command(client, message: Message):
     try:
         mongo_url = get_mongo_url(message)
