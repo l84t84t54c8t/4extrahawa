@@ -5,7 +5,7 @@ from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-SUPPORT_CHAT = "MGIMT"
+SUPPORT_CHAT = "Haawall"
 
 
 @app.on_message(
@@ -44,7 +44,7 @@ async def wish(_, m):
             [
                 [
                     InlineKeyboardButton(
-                        "نوێکارییەکانی ئەلینا 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
+                        "نوێکارییەکانی هەواڵ 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
                     )
                 ]
             ]
@@ -55,7 +55,7 @@ async def wish(_, m):
 BUTTON = [
     [
         InlineKeyboardButton(
-            "نوێکارییەکانی ئەلینا 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
+            "نوێکارییەکانی هەواڵ 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
         )
     ]
 ]
