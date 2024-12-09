@@ -55,39 +55,6 @@ async def iqbot(client: Client, message: Message):
         ),
     )
 
-"""
-@app.on_message(
-    filters.command(["ڕێکخەری بۆت", "/bot", "بۆتی گۆرانی", "ڕێکخەر", "/maker"], "")
-)
-async def huhh(client: Client, message: Message):
-    await message.reply_photo(
-        photo=f"https://graph.org/file/4eb53a4a6d8cba7efb4f9.jpg",
-        caption=f"""**● ڕێـكـخـەری بـۆتـی گـۆرانـی :\n⋆┄─┄─┄─┄─┄─┄─┄─┄⋆\n● بەخێربێی ئەزیزم {message.from_user.mention} 🕷️•\n● لە ڕێگای ئەم بۆتە دەتوانیت\n● بۆتی گۆرانی تایبەت بەخۆت دروستبکەیت\n● تایبەتمەندیەکانی بۆت\n● ڕێکڵام کردن، جۆینی ناچاری، گۆڕینی زانیاریەکانی بۆت\n● چالاککردن و ناچالاککردن\n● کۆنتڕۆڵکردنی ئەکاونتی یاریدەدەر**""",
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "˹ᴍ ᴀ ᴋ ᴇ ꝛ ✗ ᴀ ʟ ɪ ɴ ᴀ˼", url=f"https://t.me/IQRXBOT"
-                    ),
-                ],
-                [
-                    InlineKeyboardButton(
-                        "ڕێـكـخـەری بـۆتـی گـۆرانـی", url=f"https://t.me/IQRXBOT"
-                    ),
-                ],
-                [
-                    InlineKeyboardButton(
-                        "فێرکاری دروستکردن", url=f"https://t.me/MGIMT/639"
-                    ),
-                ],
-                [
-                    InlineKeyboardButton("⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝘼𝙇𝙄𝙉𝘼", url=f"https://t.me/MGIMT"),
-                ],
-            ]
-        ),
-    )
-
-"""
 @app.on_message(command(["@IQ7amo"]))
 async def yas(client, message):
 
