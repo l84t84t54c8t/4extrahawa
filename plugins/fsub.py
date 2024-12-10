@@ -75,7 +75,7 @@ async def set_forcesub(client: Client, message: Message):
         if existing_fsub:
             # If already enabled, send a message and return
             return await message.reply_text(
-                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @IQMCBOT**",
+                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @HawalmusicBot**",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -89,7 +89,7 @@ async def set_forcesub(client: Client, message: Message):
 
         if len(message.command) != 2:
             return await message.reply_text(
-                "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /join off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
+                "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /join off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپ بکە**",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
