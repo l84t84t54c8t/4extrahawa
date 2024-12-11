@@ -6,7 +6,7 @@ from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden,
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 
-@app.on_message(filters.incoming & filters.private, group=-2)
+@app.on_message(filters.incoming & filters.private, group=-1)
 async def must_join_channel(app: Client, msg: Message):
     if not MUST_JOIN2:
         return
@@ -14,19 +14,22 @@ async def must_join_channel(app: Client, msg: Message):
         try:
             await app.get_chat_member(MUST_JOIN2, msg.from_user.id)
         except UserNotParticipant:
+            # Set a default value for channel_name
+            channel_name = f"@{MUST_JOIN2}"
+            if MUST_JOIN2.isalpha():
+                link = "https://t.me/" + MUST_JOIN2
+            else:
+                chat_info = await app.get_chat(MUST_JOIN2)
+                link = (
+                    chat_info.invite_link
+                )  # Re-assign channel_name if a title is available
             try:
-                if MUST_JOIN2.isalpha():
-                    link = f"https://t.me/{MUST_JOIN2}"
-                else:
-                    chat_info = await app.get_chat(MUST_JOIN2)
-                    link = chat_info.invite_link
-
                 await msg.reply(
                     f"**• Sorry . . {msg.from_user.mention}\n• You must first join group to use me\n• Group : « @{MUST_JOIN2} »\n\n• ببووره . . ئەزیزم {msg.from_user.mention}\n• سەرەتا پێویستە جۆینی گرووپ بکەیت بۆ بەکارهێنانم\n• گرووپ : «  @{MUST_JOIN2} »**",
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
-                                InlineKeyboardButton("ئێرە دابگرە ✅", url=link),
+                                InlineKeyboardButton(text="𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=link),
                             ]
                         ]
                     ),
@@ -37,5 +40,3 @@ async def must_join_channel(app: Client, msg: Message):
                 pass
     except ChatAdminRequired:
         print(f"**بۆت بکە ئەدمین لە کەناڵی**: {MUST_JOIN2} !")
-    except KeyError as e:
-        print(f"Username not found: {e}")
