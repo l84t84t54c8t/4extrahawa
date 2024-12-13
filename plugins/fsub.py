@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
@@ -45,7 +46,7 @@ async def set_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                             )
                         ]
                     ]
@@ -63,7 +64,7 @@ async def set_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                             )
                         ]
                     ]
@@ -75,12 +76,12 @@ async def set_forcesub(client: Client, message: Message):
         if existing_fsub:
             # If already enabled, send a message and return
             return await message.reply_text(
-                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @HawalmusicBot**",
+                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @IQMCBOT**",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                             )
                         ]
                     ]
@@ -89,12 +90,12 @@ async def set_forcesub(client: Client, message: Message):
 
         if len(message.command) != 2:
             return await message.reply_text(
-                "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /join off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپ بکە**",
+                "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /join off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                             )
                         ]
                     ]
@@ -241,7 +242,7 @@ async def set_custom_caption(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                         )
                     ]
                 ]
@@ -284,7 +285,7 @@ async def set_custom_photo(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                         )
                     ]
                 ]
@@ -322,7 +323,7 @@ async def get_fsub_stats(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                         )
                     ]
                 ]
@@ -339,53 +340,63 @@ async def get_fsub_stats(client: Client, message: Message):
 async def get_fsub_stats(client: Client, message: Message):
     if await joinch(message):
         return
+
     # Fetch all groups where FSub is enabled from the database
     enabled_groups = forcesub_collection.find({"channel_id": {"$exists": True}})
 
     if forcesub_collection.count_documents({"channel_id": {"$exists": True}}) == 0:
         return await message.reply_text("**• جۆینی ناچاری چالاک نەکراوە**")
 
-    # Prepare the response message
-    text = "**• زانیاری گرووپ و کەناڵی جۆینی ناچاری :**\n\n"
+    # Prepare the text content for the file
+    content = "• زانیاری گرووپ و کەناڵی جۆینی ناچاری:\n\n"
 
     for group in enabled_groups:
         chat_id = group["chat_id"]
-        group_info = await client.get_chat(
-            chat_id
-        )  # Fetch group information from Telegram
-
-        group_title = group_info.title
-        group_username = group_info.username if group_info.username else "N/A"
+        try:
+            # Fetch group information
+            group_info = await client.get_chat(chat_id)
+            group_title = group_info.title
+            group_username = group_info.username if group_info.username else "N/A"
+        except Exception:
+            group_title = "Unknown"
+            group_username = "N/A"
 
         channel_id = group["channel_id"]
-        channel_info = await client.get_chat(
-            channel_id
-        )  # Fetch channel information from Telegram
-        channel_title = channel_info.title
-        channel_username = channel_info.username if channel_info.username else "N/A"
+        try:
+            # Fetch channel information
+            channel_info = await client.get_chat(channel_id)
+            channel_title = channel_info.title
+            channel_username = channel_info.username if channel_info.username else "N/A"
+        except Exception:
+            channel_title = "Unknown"
+            channel_username = "N/A"
 
-        # Append group and channel details to the message
-        text += (
-            f"**ناوی گرووپ : {group_title}**\n"
-            f"**ئایدی گرووپ :** `{chat_id}`\n"
-            f"**یوزەری گرووپ : @{group_username if group_username != 'N/A' else 'None'}**\n\n"
-            f"**ناوی کەناڵ : {channel_title}**\n"
-            f"**ئایدی کەناڵ :** `{channel_id}`\n"
-            f"**یوزەری کەناڵ : @{channel_username if channel_username != 'N/A' else 'None'}**\n\n"
+        # Append group and channel details to the file content
+        content += (
+            f"**ناوی گرووپ:** {group_title}\n"
+            f"**ئایدی گرووپ:** `{chat_id}`\n"
+            f"**یوزەری گرووپ:** @{group_username if group_username != 'N/A' else 'None'}\n\n"
+            f"**ناوی کەناڵ:** {channel_title}\n"
+            f"**ئایدی کەناڵ:** `{channel_id}`\n"
+            f"**یوزەری کەناڵ:** @{channel_username if channel_username != 'N/A' else 'None'}\n\n"
         )
 
-    await message.reply_text(
-        text,
+    # Save the content to a file
+    file_path = "fsub_stats.txt"
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(content)
+
+    # Send the file as a document
+    await message.reply_document(
+        file_path,
+        caption="**• زانیاری گرووپ و کەناڵی جۆینی ناچاری بە وردەکاری:**",
         reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
-                    )
-                ]
-            ]
+            [[InlineKeyboardButton("𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url="https://t.me/GroupAlina")]]
         ),
     )
+
+    # Clean up by removing the file after sending
+    os.remove(file_path)
 
 
 async def check_forcesub(client: Client, message: Message):
@@ -398,10 +409,14 @@ async def check_forcesub(client: Client, message: Message):
     # Fetch force subscription data from the database
     forcesub_data = forcesub_collection.find_one({"chat_id": chat_id})
     if not forcesub_data:
-        return  # If no force sub data is found, exit early
+        return False  # Exit early if no force sub data is found
 
     channel_id = forcesub_data.get("channel_id")
     channel_username = forcesub_data.get("channel_username")
+
+    # Validate channel_id
+    if not channel_id:
+        return False  # Exit early if channel_id is missing or invalid
 
     # Retrieve custom photo and caption from the database
     custom_photo_id = forcesub_data.get("custom_photo_id")
@@ -423,18 +438,18 @@ async def check_forcesub(client: Client, message: Message):
         # Check if the user is a member of the channel
         user_member = await client.get_chat_member(channel_id, user_id)
         if user_member:
-            return  # User is a member, no further action needed
+            return True  # User is a member
     except UserNotParticipant:
         # If user is not a participant, delete the message and send force sub
         # message
         await message.delete()
 
         # Create the channel link (username or invite link)
-        if channel_username:
-            channel_url = f"https://t.me/{channel_username}"
-        else:
-            invite_link = await client.export_chat_invite_link(channel_id)
-            channel_url = invite_link
+        channel_url = (
+            f"https://t.me/{channel_username}"
+            if channel_username
+            else await client.export_chat_invite_link(channel_id)
+        )
 
         # Send message with photo if custom_photo_id is available, otherwise
         # send caption only
@@ -442,7 +457,8 @@ async def check_forcesub(client: Client, message: Message):
             await message.reply_photo(
                 photo=custom_photo_id,
                 caption=final_caption.format(
-                    name=message.from_user.mention, mention=channel_username
+                    name=message.from_user.mention,
+                    mention=channel_username or "Channel",
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -453,18 +469,18 @@ async def check_forcesub(client: Client, message: Message):
                         ],
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍",
-                                url=f"https://t.me/piec0flife",
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
+                                url="https://t.me/GroupAlina",
                             )
                         ],
                     ]
                 ),
             )
         else:
-            # Send only the text if no photo is available
             await message.reply_text(
                 final_caption.format(
-                    name=message.from_user.mention, mention=channel_username
+                    name=message.from_user.mention,
+                    mention=channel_username or "Channel",
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -475,23 +491,25 @@ async def check_forcesub(client: Client, message: Message):
                         ],
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍",
-                               url=f"https://t.me/piec0flife",
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
+                                url="https://t.me/GroupAlina",
                             )
                         ],
                     ]
                 ),
                 disable_web_page_preview=True,
             )
-
         await asyncio.sleep(1)
 
     except ChatAdminRequired:
         # Handle the case where the bot is not an admin in the channel
         forcesub_collection.delete_one({"chat_id": chat_id})
-        return await message.reply_text(
+        await message.reply_text(
             "**🚫 من ئەدمین نیم لە کەناڵ\n🚫 جۆینی ناچاری ناچالاککراوە**"
         )
+        return False
+
+    return False
 
 
 @app.on_message(filters.group, group=30)
