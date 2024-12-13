@@ -46,7 +46,7 @@ async def set_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                             )
                         ]
                     ]
@@ -64,7 +64,7 @@ async def set_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                             )
                         ]
                     ]
@@ -81,7 +81,7 @@ async def set_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                             )
                         ]
                     ]
@@ -95,7 +95,7 @@ async def set_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                             )
                         ]
                     ]
@@ -242,7 +242,7 @@ async def set_custom_caption(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                         )
                     ]
                 ]
@@ -285,7 +285,7 @@ async def set_custom_photo(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                         )
                     ]
                 ]
@@ -323,7 +323,7 @@ async def get_fsub_stats(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                         )
                     ]
                 ]
@@ -391,7 +391,7 @@ async def get_fsub_stats(client: Client, message: Message):
         file_path,
         caption="**• زانیاری گرووپ و کەناڵی جۆینی ناچاری بە وردەکاری:**",
         reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url="https://t.me/GroupAlina")]]
+            [[InlineKeyboardButton("𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url="https://t.me/piec0flife")]]
         ),
     )
 
@@ -469,8 +469,8 @@ async def check_forcesub(client: Client, message: Message):
                         ],
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
-                                url="https://t.me/GroupAlina",
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍",
+                                url="https://t.me/piec0flife",
                             )
                         ],
                     ]
@@ -491,8 +491,8 @@ async def check_forcesub(client: Client, message: Message):
                         ],
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
-                                url="https://t.me/GroupAlina",
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍",
+                                url="https://t.me/piec0flife",
                             )
                         ],
                     ]
