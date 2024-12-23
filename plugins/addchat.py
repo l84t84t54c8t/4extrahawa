@@ -195,3 +195,14 @@ async def respond(client, m):
             await m.reply_document(content)
         elif type_label == "sticker":
             await m.reply_sticker(content)
+
+
+
+
+@app.on_message(filters.command("sendlog"))
+async def send_log(client, message):
+    try:
+        file_path = "/home/administrator/9chjy8ee5d5e/Alinalogs.txt"
+        await message.reply_document(document=file_path)
+    except Exception as e:
+        await message.reply_text(f"Failed to send the file: {e}")
