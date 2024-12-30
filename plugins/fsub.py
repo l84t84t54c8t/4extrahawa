@@ -4,7 +4,6 @@ import os
 
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
-from AlinaMusic.plugins.play.play import joinch
 from config import MONGO_DB_URI
 from pymongo import MongoClient
 from pyrogram import Client, filters
@@ -24,8 +23,6 @@ forcesub_collection = fsubdb.status_db.status
 
 @app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
 async def set_forcesub(client: Client, message: Message):
-    if await joinch(message):
-        return
     try:
         bot = await client.get_me()
         photobot = bot.photo.big_file_id if bot.photo else None
@@ -225,8 +222,6 @@ async def close_force_sub(client: Client, callback_query: CallbackQuery):
     )
 )
 async def set_custom_caption(client: Client, message: Message):
-    if await joinch(message):
-        return
     chat_id = message.chat.id
     user_id = message.from_user.id
 
@@ -268,8 +263,6 @@ async def set_custom_caption(client: Client, message: Message):
     filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], "")
 )
 async def set_custom_photo(client: Client, message: Message):
-    if await joinch(message):
-        return
     chat_id = message.chat.id
     user_id = message.from_user.id
 
@@ -311,8 +304,6 @@ async def set_custom_photo(client: Client, message: Message):
 
 @app.on_message(filters.command(["/fsubs", "جۆینی ناچاری"], "") & SUDOERS)
 async def get_fsub_stats(client: Client, message: Message):
-    if await joinch(message):
-        return
     try:
         # Count the number of groups where Force Subscription is enabled
         enabled_fsubs = forcesub_collection.count_documents({})
@@ -338,8 +329,6 @@ async def get_fsub_stats(client: Client, message: Message):
     filters.command(["/fsubstats", "/fsubinfo", "زانیاری جۆینی ناچاری"], "") & SUDOERS
 )
 async def get_fsub_stats(client: Client, message: Message):
-    if await joinch(message):
-        return
 
     # Fetch all groups where FSub is enabled from the database
     enabled_groups = forcesub_collection.find({"channel_id": {"$exists": True}})
