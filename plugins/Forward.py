@@ -1,6 +1,5 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
-from AlinaMusic.plugins.play.play import joinch
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid
@@ -74,8 +73,6 @@ async def delete_forwarded_messages(app, message):
 @app.on_message(filters.command("forward") & filters.group)
 @adminsOnly("can_delete_messages")
 async def toggle_forwarded_deletion(client, message):
-    if await joinch(message):
-        return
     action = message.command[1].lower() if len(message.command) > 1 else None
 
     if action not in ["on", "off"]:
@@ -105,8 +102,6 @@ async def toggle_forwarded_deletion(client, message):
 @app.on_message(filters.command(["/getforward", "ناردنی ڕێکڵام"], "") & filters.group)
 @adminsOnly("can_delete_messages")
 async def check_forwarded_deletion(client, message):
-    if await joinch(message):
-        return
     # Check if deletion is enabled for the chat
     deletion_status = await is_deletion_enabled(message.chat.id)
 
