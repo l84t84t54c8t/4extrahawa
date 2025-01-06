@@ -1,10 +1,38 @@
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
+from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import ChatAdminRequired
 
 
+async def is_admin(client, chat_id, user_id):
+    member = await client.get_chat_member(chat_id, user_id)
+    return member.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER)
+
+
 # vc on
+def require_admin(func):
+    async def wrapper(client, message):
+        is_bot_admin = await is_admin(
+            client, message.chat.id, (await client.get_me()).id
+        )
+        if not is_bot_admin:
+            await message.reply(
+                "<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>"
+            )
+            return
+        await func(client, message)
+
+    return wrapper
+
+
+@app.on_message(filters.video_chat_started)
+@require_admin
+async def brah(client, message):
+    await message.reply("<b>• ئەدمین تێلی کردەوە وەرن ⎋</b>")
+
+
+"""
 @app.on_message(filters.video_chat_started)
 async def brah(client, message):
     try:
@@ -16,6 +44,8 @@ async def brah(client, message):
             "<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>"
         )
 
+"""
+
 
 @app.on_message(filters.video_chat_ended)
 async def brah2(client, message):
@@ -25,7 +55,6 @@ async def brah2(client, message):
         ho = divmod(ma[0], 60)  # hours and minutes
         day = divmod(ho[0], 24)  # days and hours
 
-        # Create the appropriate message based on the duration
         if da < 60:
             reply_message = f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {da} چرکە و داخرا ⎋**"
         elif da < 3600:
@@ -35,14 +64,22 @@ async def brah2(client, message):
         else:
             reply_message = f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {day[0]} ڕۆژ ⎋**"
 
-        # Try to send the reply and handle permissions errors
-        try:
-            await message.reply(reply_message)
-        except ChatAdminRequired:
-            print(f"Error: Bot lacks admin privileges in chat {message.chat.id}")
+        # Check if the bot has admin privileges
+        is_bot_admin = await is_admin(
+            client, message.chat.id, (await client.get_me()).id
+        )
+        if not is_bot_admin:
+            print(f"Bot lacks admin privileges in chat {message.chat.id}")
             await message.reply(
                 "<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>"
             )
+            return
+
+        # Reply if bot has admin privileges
+        try:
+            await message.reply(reply_message)
+        except ChatAdminRequired:
+            print(f"Error: Bot still lacks privileges in chat {message.chat.id}")
     else:
         print("No duration available for the video chat.")
 
