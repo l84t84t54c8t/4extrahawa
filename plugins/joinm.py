@@ -14,16 +14,15 @@ async def must_join_channel(app: Client, msg: Message):
         try:
             await app.get_chat_member(MUST_JOIN, msg.from_user.id)
         except UserNotParticipant:
-            # Set a default value for channel_name
+            # Set default values for channel_name and channel_name1
             channel_name = f"@{MUST_JOIN}"
+            channel_name1 = channel_name
             if MUST_JOIN.isalpha():
                 link = "https://t.me/" + MUST_JOIN
             else:
                 chat_info = await app.get_chat(MUST_JOIN)
                 link = chat_info.invite_link
-                channel_name1 = (
-                    chat_info.title
-                )  # Re-assign channel_name if a title is available
+                channel_name1 = chat_info.title  # Re-assign if a title is available
 
             try:
                 await msg.reply(
