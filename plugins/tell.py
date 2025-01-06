@@ -1,16 +1,26 @@
+import logging
+
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import ChatAdminRequired
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
 
+
+# Utility function to check if a user is an admin
 async def is_admin(client, chat_id, user_id):
-    member = await client.get_chat_member(chat_id, user_id)
-    return member.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER)
+    try:
+        member = await client.get_chat_member(chat_id, user_id)
+        return member.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER)
+    except Exception as e:
+        logging.warning(f"Failed to check admin status: {e}")
+        return False
 
 
-# vc on
+# Decorator to ensure bot is an admin
 def require_admin(func):
     async def wrapper(client, message):
         is_bot_admin = await is_admin(
@@ -20,41 +30,31 @@ def require_admin(func):
             await message.reply(
                 "<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>"
             )
-            return
+            return  # Stop execution if not admin
         await func(client, message)
 
     return wrapper
 
 
-@app.on_message(filters.video_chat_started)
+# Handle when a video chat is started
+@app.on_message(filters.group & filters.video_chat_started, group=333)
 @require_admin
-async def brah(client, message):
-    await message.reply("<b>• ئەدمین تێلی کردەوە وەرن ⎋</b>")
-
-
-"""
-@app.on_message(filters.video_chat_started)
-async def brah(client, message):
+async def video_chat_started_handler(client, message):
     try:
         await message.reply("<b>• ئەدمین تێلی کردەوە وەرن ⎋</b>")
     except ChatAdminRequired:
-        # Handle the case when the bot is not an admin
-        print(f"Error: Bot does not have admin privileges in chat {message.chat.id}")
-        await message.reply(
-            "<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>"
-        )
-
-"""
+        logging.warning(f"Bot lacks admin privileges in chat {message.chat.id}")
 
 
-@app.on_message(filters.video_chat_ended)
-async def brah2(client, message):
+@app.on_message(filters.group & filters.video_chat_ended, group=300)
+async def video_chat_ended_handler(client, message):
     if message.video_chat_ended and message.video_chat_ended.duration:
         da = message.video_chat_ended.duration
         ma = divmod(da, 60)  # minutes and seconds
         ho = divmod(ma[0], 60)  # hours and minutes
         day = divmod(ho[0], 24)  # days and hours
 
+        # Generate the reply message based on duration
         if da < 60:
             reply_message = f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {da} چرکە و داخرا ⎋**"
         elif da < 3600:
@@ -64,78 +64,81 @@ async def brah2(client, message):
         else:
             reply_message = f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {day[0]} ڕۆژ ⎋**"
 
-        # Check if the bot has admin privileges
+        # Check admin privileges before replying
         is_bot_admin = await is_admin(
             client, message.chat.id, (await client.get_me()).id
         )
         if not is_bot_admin:
-            print(f"Bot lacks admin privileges in chat {message.chat.id}")
+            logging.warning(f"Bot lacks admin privileges in chat {message.chat.id}")
             await message.reply(
                 "<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>"
             )
             return
 
-        # Reply if bot has admin privileges
         try:
             await message.reply(reply_message)
         except ChatAdminRequired:
-            print(f"Error: Bot still lacks privileges in chat {message.chat.id}")
+            logging.warning(
+                f"Bot still lacks admin privileges in chat {message.chat.id}"
+            )
     else:
-        print("No duration available for the video chat.")
+        logging.info("No duration available for the video chat.")
+
+
+# Math calculation command
 
 
 @app.on_message(filters.command("math", prefixes="/"))
 def calculate_math(client, message):
-    expression = message.text.split("/math ", 1)[1]
     try:
+        expression = message.text.split("/math ", 1)[1]
         result = eval(expression)
         response = f"ᴛʜᴇ ʀᴇsᴜʟᴛ ɪs : {result}"
-    except BaseException:
+    except Exception:
         response = "ɪɴᴠᴀʟɪᴅ ᴇxᴘʀᴇssɪᴏɴ"
     message.reply(response)
 
 
-###
+# Command to leave a group
 @app.on_message(filters.command("leavegroup") & SUDOERS)
-async def bot_leave(_, message):
+async def bot_leave_group(client, message):
     chat_id = message.chat.id
-    text = f"**◗⋮◖ بە سەرکەوتوویی لێفت دەکەم گەشەپێدەر**"
-    await message.reply_text(text)
-    await app.leave_chat(chat_id=chat_id, delete=True)
+    try:
+        text = f"**◗⋮◖ بە سەرکەوتوویی لێفت دەکەم گەشەپێدەر**"
+        await message.reply_text(text)
+        await client.leave_chat(chat_id=chat_id, delete=True)
+    except Exception as e:
+        logging.error(f"Failed to leave group: {e}")
 
 
-####
-
-
+# Example of handling search (ensure API keys are configured properly)
 @app.on_message(filters.command(["spg"], ["/", "!", "."]))
 async def search(event):
     msg = await event.respond("Searching...")
-    async with aiohttp.ClientSession() as session:
-        start = 1
-        async with session.get(
-            f"https://content-customsearch.googleapis.com/customsearch/v1?cx=ec8db9e1f9e41e65e&q={event.text.split()[1]}&key=AIzaSyAa8yy0GdcGPHdtD083HiGGx_S0vMPScDM&start={start}",
-            headers={"x-referer": "https://explorer.apis.google.com"},
-        ) as r:
-            response = await r.json()
-            result = ""
+    try:
+        async with aiohttp.ClientSession() as session:
+            start = 1
+            async with session.get(
+                f"https://content-customsearch.googleapis.com/customsearch/v1"
+                f"?cx=your_cx_key&q={event.text.split()[1]}&key=your_api_key&start={start}"
+            ) as r:
+                response = await r.json()
+                if not response.get("items"):
+                    return await msg.edit("No results found!")
+                result = "\n\n".join(
+                    f"{item['title']}\n{item['link']}" for item in response["items"]
+                )
+                await msg.edit(result, link_preview=False)
+    except Exception as e:
+        logging.error(f"Search failed: {e}")
+        await msg.edit("Search failed!")
 
-            if not response.get("items"):
-                return await msg.edit("No results found!")
-            for item in response["items"]:
-                title = item["title"]
-                link = item["link"]
-                if "/s" in item["link"]:
-                    link = item["link"].replace("/s", "")
-                elif re.search(r"\/\d", item["link"]):
-                    link = re.sub(r"\/\d", "", item["link"])
-                if "?" in link:
-                    link = link.split("?")[0]
-                if link in result:
-                    # remove duplicates
-                    continue
-                result += f"{title}\n{link}\n\n"
-            prev_and_next_btns = [
-                Button.inline("▶️Next▶️", data=f"next {start+10} {event.text.split()[1]}")
-            ]
-            await msg.edit(result, link_preview=False, buttons=prev_and_next_btns)
-            await session.close()
+
+# Handle unexpected errors globally
+@app.on_message()
+async def catch_all(client, message):
+    try:
+        # Your additional handlers here
+        pass
+    except Exception as e:
+        logging.error(f"Unhandled error: {e}")
