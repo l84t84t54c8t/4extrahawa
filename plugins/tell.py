@@ -37,7 +37,7 @@ def require_admin(func):
 
 
 # Handle when a video chat is started
-@app.on_message(filters.video_chat_started)
+@app.on_message(filters.group & filters.video_chat_started, group=333)
 @require_admin
 async def video_chat_started_handler(client, message):
     try:
@@ -46,7 +46,7 @@ async def video_chat_started_handler(client, message):
         logging.warning(f"Bot lacks admin privileges in chat {message.chat.id}")
 
 
-@app.on_message(filters.video_chat_ended)
+@app.on_message(filters.group & filters.video_chat_ended, group=300)
 async def video_chat_ended_handler(client, message):
     if message.video_chat_ended and message.video_chat_ended.duration:
         da = message.video_chat_ended.duration
@@ -133,12 +133,3 @@ async def search(event):
         logging.error(f"Search failed: {e}")
         await msg.edit("Search failed!")
 
-
-# Handle unexpected errors globally
-@app.on_message()
-async def catch_all(client, message):
-    try:
-        # Your additional handlers here
-        pass
-    except Exception as e:
-        logging.error(f"Unhandled error: {e}")
