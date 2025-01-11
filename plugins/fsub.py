@@ -19,7 +19,6 @@ logging.basicConfig(
 
 forcesub_collection = mongodb.fsub_db
 
-
 @app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
 async def set_forcesub(client: Client, message: Message):
     try:
