@@ -3,7 +3,6 @@ import logging
 import os
 
 from AlinaMusic import app
-from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
 from config import MONGO_DB_URI
 from pymongo import MongoClient
