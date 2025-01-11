@@ -102,6 +102,7 @@ async def set_forcesub(client: Client, message: Message):
         channel_input = message.command[1]
 
         try:
+            # Try resolving the username to check if it's valid
             channel_info = await client.get_chat(channel_input)
             channel_id = channel_info.id
             channel_title = channel_info.title
@@ -128,7 +129,7 @@ async def set_forcesub(client: Client, message: Message):
                         "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
                         "- تکایە بمکە ئەدمین\n"
                         "- لە ڕێگای دووگمەی خوارەوە\n"
-                        "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
+                        "- دواتر فەرمانی جۆین دووبارە بکە\n\n"
                         "**• /fsub + یوزەری کەناڵت**"
                     ),
                     reply_markup=InlineKeyboardMarkup(
@@ -179,30 +180,12 @@ async def set_forcesub(client: Client, message: Message):
                 ),
             )
 
-            await asyncio.sleep(1)
+        except ValueError as ve:
+            logging.error(f"Invalid channel link: {ve}")
+            await message.reply_text("The channel username provided is invalid. Please check the username and try again.")
         except Exception as e:
             logging.error(f"Error processing channel information: {e}")
-            await message.reply_photo(
-                photo=botphoto,
-                caption=(
-                    "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
-                    "- تکایە بمکە ئەدمین\n"
-                    "- لە ڕێگای دووگمەی خوارەوە\n"
-                    "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
-                    "**• /fsub + یوزەری کەناڵت**"
-                ),
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                "๏ زیادم بکە بۆ کەناڵ وەک ئەدمین ๏",
-                                url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats",
-                            )
-                        ]
-                    ]
-                ),
-            )
-            await asyncio.sleep(1)
+            await message.reply_text("An error occurred while processing the channel information. Please try again later.")
 
     except Exception as e:
         logging.error(f"Error in set_forcesub: {e}")
