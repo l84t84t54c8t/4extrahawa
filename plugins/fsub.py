@@ -3,8 +3,8 @@ import logging
 import os
 
 from AlinaMusic import app
+from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
-from config import MONGO_DB_URI
 from pymongo import MongoClient
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus
@@ -17,8 +17,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-fsubdb = MongoClient(MONGO_DB_URI)
-forcesub_collection = fsubdb.status_db.status
+forcesub_collection = mongodb.fsub_db
 
 
 @app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
