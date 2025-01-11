@@ -5,7 +5,7 @@ from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-SUPPORT_CHAT = "Haawall"
+SUPPORT_CHAT = "MGIMT"
 
 
 @app.on_message(
@@ -15,7 +15,7 @@ SUPPORT_CHAT = "Haawall"
     )
 )
 async def wish(_, m):
-    if len(m.command) < 2:
+    if not m.text or len(m.command) < 2:
         await m.reply("**لەگەڵ فەرمانەکە خۆزگە یان حەزەکانت بنووسە 🥺🫶🏻**")
         return
 
@@ -44,7 +44,7 @@ async def wish(_, m):
             [
                 [
                     InlineKeyboardButton(
-                        "نوێکارییەکانی هەواڵ 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
+                        "نوێکارییەکانی ئەلینا 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
                     )
                 ]
             ]
@@ -55,7 +55,7 @@ async def wish(_, m):
 BUTTON = [
     [
         InlineKeyboardButton(
-            "نوێکارییەکانی هەواڵ 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
+            "نوێکارییەکانی ئەلینا 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
         )
     ]
 ]
@@ -74,7 +74,7 @@ async def cute(_, message):
         user_name = message.from_user.first_name
     else:
         user_id = message.reply_to_message.from_user.id
-        user_name = message.reply_to_message.from_user.first_name
+        user_name = message.reply_to_message.first_name
 
     mention = f"[{user_name}](tg://user?id={str(user_id)})"
     mm = random.randint(1, 100)
