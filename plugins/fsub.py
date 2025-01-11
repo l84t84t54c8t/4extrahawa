@@ -15,14 +15,33 @@ from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
 # Set up basic logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
 
-fsubdb = MongoClient(MONGO_DB_URI)
+  
+)fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
 
-@app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
+@app.on_message(
+    filters.command(["/fsub", "/join", "/on.iq", "/on"], "") & filters.group
+)
 async def set_forcesub(client: Client, message: Message):
+    # Check if the user provided a command with "off" or "disable"
+    if len(message.command) == 2 and message.command[1].lower() in ["off", "disable"]:
+        chat_id = message.chat.id
+        forcesub_collection.delete_one({"chat_id": chat_id})
+        return await message.reply_text(
+            "**• بە سەرکەوتوویی جۆینی ناچاری ناچالاککرا.**",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                        )
+                    ]
+                ]
+            ),
+        )
+
     try:
         bot = await client.get_me()
         photobot = bot.photo.big_file_id if bot.photo else None
@@ -50,30 +69,12 @@ async def set_forcesub(client: Client, message: Message):
                 ),
             )
 
-        if len(message.command) == 2 and message.command[1].lower() in [
-            "off",
-            "disable",
-        ]:
-            forcesub_collection.delete_one({"chat_id": chat_id})
-            return await message.reply_text(
-                "**• بە سەرکەوتوویی جۆینی ناچاری ناچالاککرا .**",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
-                            )
-                        ]
-                    ]
-                ),
-            )
-
         # Check if force subscription is already enabled
         existing_fsub = forcesub_collection.find_one({"chat_id": chat_id})
         if existing_fsub:
             # If already enabled, send a message and return
             return await message.reply_text(
-                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @HawalmusicBot**",
+                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @HawalmusicBot",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -85,33 +86,27 @@ async def set_forcesub(client: Client, message: Message):
                 ),
             )
 
-        if len(message.command) != 2:
-            return await message.reply_text(
-                "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /join off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
-                            )
-                        ]
-                    ]
-                ),
-            )
+        # Ask the user for the channel if no previous force subscription exists
+        t = await message.chat.ask(
+            "**• تکایە یوزەری کەناڵ یان لینک بنێرە:**\n\n"
+            "- نمونە: @Username یان https://t.me/ChannelUsername",
+            filters=filters.text & filters.user(user_id),
+            reply_to_message_id=message.id,
+        )
 
-        # Extract channel input (either a link or username)
-        channel_input = message.command[1]
+        channel_input = t.text
 
-        # Check if the input is a valid channel username or link
+        # Normalize the input to handle both @username and
+        # https://t.me/username
         if channel_input.startswith("https://t.me/"):
             channel_username = channel_input.split("https://t.me/")[1]
         elif channel_input.startswith("@"):
             channel_username = channel_input[1:]
         else:
-            return await message.reply_text("The channel link or username is invalid. Please make sure to provide a valid @username or https://t.me/channelname link.")
+            channel_username = channel_input
 
         try:
-            # Try resolving the channel using username
+            # Try resolving the channel using the username
             channel_info = await client.get_chat(channel_username)
             channel_id = channel_info.id
             channel_title = channel_info.title
@@ -129,13 +124,13 @@ async def set_forcesub(client: Client, message: Message):
 
             if not bot_is_admin:
                 await asyncio.sleep(1)
-                return await message.reply_photo(
+                return await t.reply_photo(
                     photo=botphoto,
                     caption=(
                         "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
                         "- تکایە بمکە ئەدمین\n"
                         "- لە ڕێگای دووگمەی خوارەوە\n"
-                        "- دواتر فەرمانی جۆین دووبارە بکە\n\n"
+                        "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
                         "**• /fsub + یوزەری کەناڵت**"
                     ),
                     reply_markup=InlineKeyboardMarkup(
@@ -166,7 +161,7 @@ async def set_forcesub(client: Client, message: Message):
                 if message.from_user.username
                 else message.from_user.first_name
             )
-            await message.reply_photo(
+            await t.reply_photo(
                 photo=botphoto,
                 caption=(
                     f"**🎉 جۆینی ناچاری بۆ [{channel_title}]({channel_link}) چالاککرا**\n\n"
@@ -186,9 +181,30 @@ async def set_forcesub(client: Client, message: Message):
                 ),
             )
 
+            await asyncio.sleep(1)
         except Exception as e:
             logging.error(f"Error processing channel information: {e}")
-            await message.reply_text("An error occurred while processing the channel information. Please try again later.")
+            await t.reply_photo(
+                photo=botphoto,
+                caption=(
+                    "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
+                    "- تکایە بمکە ئەدمین\n"
+                    "- لە ڕێگای دووگمەی خوارەوە\n"
+                    "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
+                    "**• /fsub + یوزەری کەناڵت**"
+                ),
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "๏ زیادم بکە بۆ کەناڵ وەک ئەدمین ๏",
+                                url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats",
+                            )
+                        ]
+                    ]
+                ),
+            )
+            await asyncio.sleep(1)
 
     except Exception as e:
         logging.error(f"Error in set_forcesub: {e}")
