@@ -17,7 +17,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-forcesub_collection = mongodb.fsub_db
+forcesub_collection = mongodb.fsub_db.fsubdb
 
 @app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
 async def set_forcesub(client: Client, message: Message):
