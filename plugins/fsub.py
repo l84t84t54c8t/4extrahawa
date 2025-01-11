@@ -16,8 +16,9 @@ from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 
-  
-)fsubdb = MongoClient(MONGO_DB_URI)
+)
+
+fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
 
