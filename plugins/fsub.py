@@ -20,6 +20,7 @@ logging.basicConfig(
 fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
+
 @app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
 async def set_forcesub(client: Client, message: Message):
     try:
@@ -98,18 +99,23 @@ async def set_forcesub(client: Client, message: Message):
                 ),
             )
 
-        # Extract channel input
+        # Extract channel input (either a link or username)
         channel_input = message.command[1]
 
+        # Check if the input is a valid channel username or link
+        if channel_input.startswith("https://t.me/"):
+            channel_username = channel_input.split("https://t.me/")[1]
+        elif channel_input.startswith("@"):
+            channel_username = channel_input[1:]
+        else:
+            return await message.reply_text("The channel link or username is invalid. Please make sure to provide a valid @username or https://t.me/channelname link.")
+
         try:
-            # Try resolving the username to check if it's valid
-            channel_info = await client.get_chat(channel_input)
+            # Try resolving the channel using username
+            channel_info = await client.get_chat(channel_username)
             channel_id = channel_info.id
             channel_title = channel_info.title
             channel_link = await client.export_chat_invite_link(channel_id)
-            channel_username = (
-                channel_info.username if channel_info.username else channel_link
-            )
             channel_members_count = channel_info.members_count
 
             bot_id = (await client.get_me()).id
@@ -163,7 +169,7 @@ async def set_forcesub(client: Client, message: Message):
             await message.reply_photo(
                 photo=botphoto,
                 caption=(
-                    f"**🎉 جۆینی ناچاری بۆ [{channel_title}]({channel_username}) چالاککرا**\n\n"
+                    f"**🎉 جۆینی ناچاری بۆ [{channel_title}]({channel_link}) چالاککرا**\n\n"
                     f"**🆔 ئایدی کەناڵ :** {channel_id}\n"
                     f"**🖇️ لینکی کەناڵ :** [کەناڵ]({channel_link})\n"
                     f"**📊 ژماری ئەندام : {channel_members_count}**\n"
@@ -180,9 +186,6 @@ async def set_forcesub(client: Client, message: Message):
                 ),
             )
 
-        except ValueError as ve:
-            logging.error(f"Invalid channel link: {ve}")
-            await message.reply_text("The channel username provided is invalid. Please check the username and try again.")
         except Exception as e:
             logging.error(f"Error processing channel information: {e}")
             await message.reply_text("An error occurred while processing the channel information. Please try again later.")
