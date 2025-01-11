@@ -22,7 +22,7 @@ forcesub_collection = fsubdb.status_db.status
 
 
 @app.on_message(
-    filters.command(["/fsub", "/join", "on.hawa", "/on"], "") & filters.group
+    filters.command(["/fsub", "/join", "on.hawal", "/on"], "") & filters.group
 )
 async def set_forcesub(client: Client, message: Message):
     # Check if the user provided a command with "off" or "disable"
