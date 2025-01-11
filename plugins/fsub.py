@@ -207,7 +207,6 @@ async def set_forcesub(client: Client, message: Message):
         logging.error(f"Error in set_forcesub: {e}")
         await message.reply_text("An error occurred. Please try again later.")
 
-
 @app.on_callback_query(filters.regex("close_force_sub"))
 async def close_force_sub(client: Client, callback_query: CallbackQuery):
     await callback_query.answer("داخرا!")
