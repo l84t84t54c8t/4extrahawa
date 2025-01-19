@@ -202,6 +202,9 @@ async def extract_userid(message, text: str):
 
 
 async def extract_user_and_reason(message, sender_chat=False):
+    if not message.text:
+        return None, None  # Return early if the message doesn't contain text
+
     args = message.text.strip().split()
     text = message.text
     user = None
@@ -210,7 +213,7 @@ async def extract_user_and_reason(message, sender_chat=False):
     try:
         if message.reply_to_message:
             reply = message.reply_to_message
-            # if reply to a message and no reason is given
+            # If replying to a message and no reason is given
             if not reply.from_user:
                 if (
                     reply.sender_chat
@@ -229,12 +232,12 @@ async def extract_user_and_reason(message, sender_chat=False):
                 reason = text.split(None, 1)[1]
             return id_, reason
 
-        # if not reply to a message and no reason is given
+        # If not replying to a message and no reason is given
         if len(args) == 2:
             user = text.split(None, 1)[1]
             return await extract_userid(message, user), None
 
-        # if reason is given
+        # If reason is given
         if len(args) > 2:
             user, reason = text.split(None, 2)[1:]
             return await extract_userid(message, user), reason
@@ -242,7 +245,7 @@ async def extract_user_and_reason(message, sender_chat=False):
         return user, reason
 
     except errors.UsernameInvalid:
-        return "", ""
+        return None, None
 
 
 async def extract_user(message):
