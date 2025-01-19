@@ -6,8 +6,7 @@ from typing import Dict, Union
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
-from AlinaMusic.utils.functions import (extract_user, extract_user_and_reason,
-                                        time_converter)
+from AlinaMusic.utils.functions import extract_user, time_converter
 from AlinaMusic.utils.keyboard import ikb
 from config import BANNED_USERS
 from pyrogram import filters
@@ -18,6 +17,7 @@ from pyrogram.types import (CallbackQuery, ChatPermissions, ChatPrivileges,
                             InlineKeyboardButton, InlineKeyboardMarkup,
                             Message)
 
+from utils.functions import extract_user_and_reason
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
 
