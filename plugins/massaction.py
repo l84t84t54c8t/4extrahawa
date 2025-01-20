@@ -5,9 +5,14 @@ from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import get_assistant
 from pyrogram import Client, enums, filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.types import (CallbackQuery, ChatPermissions, ChatPrivileges,
-                            InlineKeyboardButton, InlineKeyboardMarkup,
-                            Message)
+from pyrogram.types import (
+    CallbackQuery,
+    ChatPermissions,
+    ChatPrivileges,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
 
 
 def get_keyboard(command):
