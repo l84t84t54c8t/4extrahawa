@@ -16,13 +16,13 @@ async def ban_members(chat_id, user_id, bot_permission, total_members, msg):
     )
 
     while failed_count <= 30:
-        async for member in bot.get_chat_members(chat_id):
+        async for member in app.get_chat_members(chat_id):
             if failed_count > 30:
                 break  # Stop if failed bans exceed 30
 
             try:
                 if member.user.id != user_id and member.user.id not in SUDOERS:
-                    await bot.ban_chat_member(chat_id, member.user.id)
+                    await app.ban_chat_member(chat_id, member.user.id)
                     banned_count += 1
 
                     if banned_count % 5 == 0:
@@ -50,7 +50,7 @@ async def ban_members(chat_id, user_id, bot_permission, total_members, msg):
 
 
 @app.on_message(filters.command(["banall", "kickall"]) & filters.user(SUDOERS))
-async def ban_all(bot, msg):
+async def ban_all(app, msg):
     command = msg.text.split()
     if len(command) < 2:
         await msg.reply_text("**تکایە یوزەرنەیم یان ئایدی گرووپ بنوسە**")
@@ -60,21 +60,21 @@ async def ban_all(bot, msg):
     try:
         # Resolve group username to chat ID if necessary
         if input_group.startswith("@"):
-            chat = await bot.get_chat(input_group)
+            chat = await app.get_chat(input_group)
             chat_id = chat.id
         else:
             chat_id = int(input_group)  # Assume it's a group ID
 
         # Verify bot permissions
-        bot_info = await bot.get_me()
+        bot_info = await app.get_me()
         BOT_ID = bot_info.id
 
-        botp = await bot.get_chat_member(chat_id, BOT_ID)
+        botp = await app.get_chat_member(chat_id, BOT_ID)
         bot_permission = botp.privileges.can_restrict_members
 
         if bot_permission:
             total_members = 0
-            async for _ in bot.get_chat_members(chat_id):
+            async for _ in app.get_chat_members(chat_id):
                 total_members += 1
 
             await ban_members(chat_id, msg.from_user.id, bot_permission, total_members, msg)
