@@ -5,7 +5,7 @@ from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-SUPPORT_CHAT = "MGIMT"
+SUPPORT_CHAT = "Haawall"
 
 
 @app.on_message(
@@ -44,7 +44,7 @@ async def wish(_, m):
             [
                 [
                     InlineKeyboardButton(
-                        "نوێکارییەکانی ئەلینا 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
+                        "نوێکارییەکانی بۆت 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
                     )
                 ]
             ]
@@ -55,7 +55,7 @@ async def wish(_, m):
 BUTTON = [
     [
         InlineKeyboardButton(
-            "نوێکارییەکانی ئەلینا 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
+            "نوێکارییەکانی بۆت 🍻", url=f"https://t.me/{SUPPORT_CHAT}"
         )
     ]
 ]
@@ -90,6 +90,51 @@ async def cute(_, message):
         ),
     )
 
+
+@app.on_message(
+    filters.command(
+        ["true", "ڕاستە", "دروستە", "راستە"],
+        prefixes=["/", "!", "%", ",", "", ".", "@", "#"],
+    )
+)
+async def true_or_false(_, message):
+    if not message.text or len(message.command) < 2:
+        await message.reply("**تکایە داواکە یان پرسیارەکەت بنووسە پاش فەرمانەکە 🤔**")
+        return
+
+    # Get the statement after the command
+    text = message.text.split(None, 1)[1]
+    true_percentage = random.randint(0, 100)  # Generate a random percentage
+
+    # Define random texts for true and false
+    true_responses = [
+        "بەڵی، ڕاستە بە ڕێژەی % 😊",
+        "ڕاستە بەڵام بێ زانیاری زیاتر % 😌",
+        "واو بژی ڕاستە % 🫨",
+        "ئەیەباا زۆرر ڕاستە % 🫶🏻",
+    ]
+    false_responses = [
+        "باوکەڕۆ بۆ ئەوەنە درۆزنی % 😅",
+        "دڵخۆش مەبە، درۆزن % 😞",
+        "ئەمە چاوەڕوان ناکرێت، درۆیە % 🙅",
+        "پەکوف لەو درۆیە % 😐",
+        "کوڕم ئەتو درۆزن نیت، درۆزانی % 😂🙂",
+    ]
+
+    # Determine the result and pick a random response
+    if true_percentage > 50:
+        is_true = random.choice(true_responses).replace("%", f"{true_percentage}%")
+    else:
+        is_true = random.choice(false_responses).replace("%", f"{true_percentage}%")
+
+    response = f"<b><blockquote>🙋🏻‍♀ پرسیار: {text}</blockquote></b>\n\n"
+    response += f"<b><blockquote>🔮 ئەنجام: {is_true}</blockquote></b>"
+
+    # Reply directly to the message the user is responding to
+    await message.reply(
+        text=response,
+        reply_markup=InlineKeyboardMarkup(BUTTON),
+    )
 
 help_text = """
 » ᴡʜᴀᴛ ɪꜱ ᴛʜɪꜱ (ᴡɪꜱʜ):
