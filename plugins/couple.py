@@ -3,42 +3,42 @@ import random
 
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
-from config import BANNED_USERS, OWNER_ID
+from config import BANNED_USERS, USER_OWNER
 from PIL import Image, ImageDraw
 from pyrogram import filters
 from pyrogram.enums import ChatAction, ChatType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from utils.permissions import adminsOnly
 
 # MongoDB collection for storing locked permissions
 coupledb = mongodb.couple
 
+
 # Lock state functions for MongoDB
-
-
 async def update_lock_state(chat_id: int, state: bool):
-    """Update the lock state for a specific chat in the lockdb collection."""
+    """Update the lock state for a specific chat."""
     await coupledb.update_one(
         {"chat_id": chat_id}, {"$set": {"locked": state}}, upsert=True
     )
 
 
 async def get_lock_state(chat_id: int) -> bool:
-    """Retrieve the lock state for a specific chat from the lockdb collection."""
+    """Retrieve the lock state for a specific chat."""
     chat = await coupledb.find_one({"chat_id": chat_id})
     return chat.get("locked", False) if chat else False
 
 
 @app.on_message(
-    filters.command(["/lock_couples", "/lockkapl", "داخستنی کەپڵ", "داخستنی کەپل"], "")
+    filters.command(
+        ["/lock_couples", "/lockkapl", "داخستنی کەپڵ", "داخستنی کەپل"],
+        prefixes=["/", "!", "%", ",", "", "@", "#"],
+    )
     & ~BANNED_USERS
 )
-@adminsOnly("can_change_info")
-async def lock_couples_command(app, message):
+@utils.adminsOnly("can_change_info")
+async def lock_couples_command(_, message):
     chat_id = message.chat.id
-    current_state = await get_lock_state(chat_id)
-    if current_state:
+    if await get_lock_state(chat_id):
         return await message.reply_text("**🔒 فەرمانی کەپڵ پێشتر داخراوە !**")
 
     await update_lock_state(chat_id, True)
@@ -47,15 +47,15 @@ async def lock_couples_command(app, message):
 
 @app.on_message(
     filters.command(
-        ["/unlock_couples", "/unlockkapl", "کردنەوەی کەپڵ", "کردنەوەی کەپل"], ""
+        ["unlock_couples", "unlockkapl", "کردنەوەی کەپڵ", "کردنەوەی کەپل"],
+        prefixes=["/", "!", "%", ",", "", "@", "#"],
     )
     & ~BANNED_USERS
 )
-@adminsOnly("can_change_info")
-async def unlock_couples_command(app, message):
+@utils.adminsOnly("can_change_info")
+async def unlock_couples_command(_, message):
     chat_id = message.chat.id
-    current_state = await get_lock_state(chat_id)
-    if not current_state:
+    if not await get_lock_state(chat_id):
         return await message.reply_text("**🔓 فەرمانی کەپڵ پێشتر کراوەتەوە !**")
 
     await update_lock_state(chat_id, False)
@@ -65,103 +65,77 @@ async def unlock_couples_command(app, message):
 @app.on_message(
     filters.command(
         ["couples", "couple", "kapl", "قل", "کەپل", "کەپڵ"],
-        prefixes=["/", "!", "%", ",", "", ".", "@", "#"],
+        prefixes=["/", "!", "%", ",", "", "@", "#"],
     )
     & ~BANNED_USERS
 )
-async def couples(app, message):
-    cid = message.chat.id
+async def couples(_, message):
+    chat_id = message.chat.id
 
-    # Check lock state from database
-    command_locked = await get_lock_state(cid)
-    if command_locked:
+    if await get_lock_state(chat_id):
         return await message.reply_text("**🔒 ببورە ئەم فەرمانە داخراوە**")
 
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text("**تەنیا لە گرووپ کارەکات😂🙂**")
 
+    msg = await message.reply_text("**دوو ئاشقە شێتەکە دیاری دەکرێت😂🙂🫶🏻!**")
+    list_of_users = [
+        member.user.id
+        async for member in app.get_chat_members(chat_id, limit=50)
+        if not member.user.is_bot and not member.user.is_deleted
+    ]
+
+    if len(list_of_users) < 2:
+        return await msg.edit("Not enough members to form a couple! 😢")
+
+    c1_id, c2_id = random.sample(list_of_users, 2)
+    user1, user2 = await app.get_users([c1_id, c2_id])
+    photo1, photo2 = user1.photo, user2.photo
+
+    # Download profile pictures
+    p1 = await app.download_media(photo1.big_file_id) if photo1 else "assets/upic.png"
+    p2 = await app.download_media(photo2.big_file_id) if photo2 else "assets/upic.png"
+
     try:
-        msg = await message.reply_text("**دوو ئاشقە شێتەکە دیاری دەکرێت😂🙂🫶🏻!**")
-        list_of_users = []
-
-        async for member in app.get_chat_members(message.chat.id, limit=50):
-            if not member.user.is_bot and not member.user.is_deleted:
-                list_of_users.append(member.user.id)
-
-        if len(list_of_users) < 2:
-            return await msg.edit("Not enough members to form a couple! 😢")
-
-        c1_id = random.choice(list_of_users)
-        c2_id = random.choice(list_of_users)
-        while c1_id == c2_id:
-            c2_id = random.choice(list_of_users)
-
-        photo1 = (await app.get_chat(c1_id)).photo
-        photo2 = (await app.get_chat(c2_id)).photo
-
-        N1 = (await app.get_users(c1_id)).mention
-        N2 = (await app.get_users(c2_id)).mention
-
-        try:
-            p1 = await app.download_media(photo1.big_file_id, file_name="pfp.png")
-        except Exception:
-            p1 = "assets/upic.png"
-        try:
-            p2 = await app.download_media(photo2.big_file_id, file_name="pfp1.png")
-        except Exception:
-            p2 = "assets/upic.png"
-
-        OWNER = OWNER_ID[0] if isinstance(OWNER_ID, list) else OWNER_ID
-
-        img1 = Image.open(p1)
-        img2 = Image.open(p2)
-        img = Image.open("assets/cppic.png")
-
-        img1 = img1.resize((437, 437))
-        img2 = img2.resize((437, 437))
-
-        mask = Image.new("L", img1.size, 0)
-        draw = ImageDraw.Draw(mask)
-        draw.ellipse((0, 0) + img1.size, fill=255)
-
-        mask1 = Image.new("L", img2.size, 0)
-        draw = ImageDraw.Draw(mask1)
-        draw.ellipse((0, 0) + img2.size, fill=255)
-
+        img1, img2 = Image.open(p1).resize((437, 437)), Image.open(p2).resize(
+            (437, 437)
+        )
+        mask = Image.new("L", (437, 437), 0)
+        ImageDraw.Draw(mask).ellipse((0, 0, 437, 437), fill=255)
         img1.putalpha(mask)
-        img2.putalpha(mask1)
+        img2.putalpha(mask)
 
-        img.paste(img1, (116, 160), img1)
-        img.paste(img2, (789, 160), img2)
+        combined_img = Image.open("assets/cppic.png")
+        combined_img.paste(img1, (116, 160), img1)
+        combined_img.paste(img2, (789, 160), img2)
+        output_path = f"couple_{chat_id}.png"
+        combined_img.save(output_path)
 
-        img.save(f"test_{cid}.png")
-
-        TXT = f"""**
+        caption = f"""**
 کەپڵەکان دیاری کران 💍🌚 :
 ➖➖➖➖➖➖➖➖➖➖➖➖➖➖
-{N1} + {N2} = ❣️
+{user1.mention} + {user2.mention} = ❣️
 ➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 پیرۆزە 😂🎉
-**
-"""
-        await app.send_chat_action(message.chat.id, ChatAction.UPLOAD_PHOTO)
+**"""
+        await app.send_chat_action(chat_id, ChatAction.UPLOAD_PHOTO)
         await message.reply_photo(
-            f"test_{cid}.png",
-            caption=TXT,
+            output_path,
+            caption=caption,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text="👻 خاوەنی بۆت 👻", user_id=OWNER)]]
+                [
+                    [
+                        InlineKeyboardButton(
+                            "👻 خاوەنی بۆت 👻", url=f"https://t.me/{USER_OWNER}"
+                        )
+                    ]
+                ]
             ),
         )
-        await msg.delete()
-
     except Exception as e:
-        print(f"Error: {e}")
-
+        await message.reply_text(f"An error occurred: {e}")
     finally:
-        # Cleanup
-        try:
-            os.remove("pfp.png")
-            os.remove("pfp1.png")
-            os.remove(f"test_{cid}.png")
-        except Exception:
-            pass
+        os.remove(p1) if os.path.exists(p1) else None
+        os.remove(p2) if os.path.exists(p2) else None
+        os.remove(output_path) if os.path.exists(output_path) else None
+        await msg.delete()
