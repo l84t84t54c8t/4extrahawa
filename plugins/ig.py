@@ -26,7 +26,7 @@ async def down(app, message):
         )
 
         # Send video directly
-        caption = "**✅꒐ بە سەرکەوتوویی داگرترا\n🎸꒐ بۆتی @IQMCBOT**"
+        caption = "**✅꒐ بە سەرکەوتوویی داگرترا\n🎸꒐ بۆتی @{app.username}**"
         await app.send_video(message.chat.id, video, caption=caption)
 
     except Exception as e:
