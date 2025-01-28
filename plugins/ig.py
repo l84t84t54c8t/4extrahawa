@@ -27,7 +27,7 @@ async def down(app, message):
         # Send thumbnail as a photo
         await message.reply_photo(
             thu,
-            caption="**← کەمێک چاوەڕێ بکە .. ڤیدیۆ دادەبەزێت ...\n⧉• لەلایەن : @{app.me.username}**",
+            caption=f"**← کەمێک چاوەڕێ بکە .. ڤیدیۆ دادەبەزێت ...\n⧉• لەلایەن @{app.me.username}**",
         )
 
         # Send video directly
