@@ -2,7 +2,7 @@ import re
 
 from AlinaMusic import app
 from pyrogram import filters
-from youtubesearchpython.__future__ import VideosSearch
+from py_yt import VideosSearch
 
 
 async def gen_infos(url):
