@@ -25,11 +25,11 @@ logging.basicConfig(
 )
 
 fsubdb = MongoClient(MONGO_DB_URI)
-forcesub_collection = fsubdb.status_db.statusfsub
+forcesub_collection = fsubdb.status_db.status
 
 
 @app.on_message(
-    filters.command(["/fsub", "/join", "/on.iq", "/on"], "") & filters.group, group=94
+    filters.command(["/fsub", "/join", "/on.hawal", "/on"], "") & filters.group, group=94
 )
 async def set_forcesub(client: Client, message: Message):
     # Check if the user provided a command with "off" or "disable"
@@ -42,7 +42,7 @@ async def set_forcesub(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                         )
                     ]
                 ]
@@ -72,7 +72,7 @@ async def set_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                             )
                         ]
                     ]
@@ -84,12 +84,12 @@ async def set_forcesub(client: Client, message: Message):
         if existing_fsub:
             # If already enabled, send a message and return
             return await message.reply_text(
-                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @IQMCBOT",
+                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @HawalmusicBot",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                             )
                         ]
                     ]
@@ -251,7 +251,7 @@ async def set_custom_caption(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                         )
                     ]
                 ]
@@ -304,7 +304,7 @@ async def set_custom_photo(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                         )
                     ]
                 ]
@@ -344,7 +344,7 @@ async def get_fsub_stats(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
                         )
                     ]
                 ]
@@ -413,7 +413,7 @@ async def get_fsub_stats(client: Client, message: Message):
         file_path,
         caption="**• زانیاری گرووپ و کەناڵی جۆینی ناچاری بە وردەکاری:**",
         reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url="https://t.me/GroupAlina")]]
+            [[InlineKeyboardButton("𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife")]]
         ),
     )
 
@@ -491,8 +491,8 @@ async def check_forcesub(client: Client, message: Message):
                         ],
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
-                                url="https://t.me/GroupAlina",
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍",
+                                url="https://t.me/piec0flife",
                             )
                         ],
                     ]
@@ -513,8 +513,8 @@ async def check_forcesub(client: Client, message: Message):
                         ],
                         [
                             InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
-                                url="https://t.me/GroupAlina",
+                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍",
+                                url="https://t.me/piec0flife",
                             )
                         ],
                     ]
