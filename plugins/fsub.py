@@ -4,26 +4,32 @@ import os
 
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
+from AlinaMusic.plugins.play.play import joinch
 from config import MONGO_DB_URI
 from pymongo import MongoClient
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus
 from pyrogram.errors import ChatAdminRequired, UserNotParticipant
-from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
-                            InlineKeyboardMarkup, Message)
+from pyrogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
+from pyromod import listen  # for ask
+
 
 # Set up basic logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-
 )
 
 fsubdb = MongoClient(MONGO_DB_URI)
-forcesub_collection = fsubdb.status_db.status
+forcesub_collection = fsubdb.status_db.statusfsub
 
 
 @app.on_message(
-    filters.command(["/fsub", "/join", "on.hawal", "/on"], "") & filters.group
+    filters.command(["/fsub", "/join", "/on.iq", "/on"], "") & filters.group, group=94
 )
 async def set_forcesub(client: Client, message: Message):
     # Check if the user provided a command with "off" or "disable"
@@ -36,12 +42,15 @@ async def set_forcesub(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                         )
                     ]
                 ]
             ),
         )
+
+    if await joinch(message):
+        return
 
     try:
         bot = await client.get_me()
@@ -63,7 +72,7 @@ async def set_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                             )
                         ]
                     ]
@@ -75,12 +84,12 @@ async def set_forcesub(client: Client, message: Message):
         if existing_fsub:
             # If already enabled, send a message and return
             return await message.reply_text(
-                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @HawalmusicBot",
+                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @IQMCBOT",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                             )
                         ]
                     ]
@@ -211,6 +220,7 @@ async def set_forcesub(client: Client, message: Message):
         logging.error(f"Error in set_forcesub: {e}")
         await message.reply_text("An error occurred. Please try again later.")
 
+
 @app.on_callback_query(filters.regex("close_force_sub"))
 async def close_force_sub(client: Client, callback_query: CallbackQuery):
     await callback_query.answer("داخرا!")
@@ -220,9 +230,12 @@ async def close_force_sub(client: Client, callback_query: CallbackQuery):
 @app.on_message(
     filters.command(
         ["/setcaption", "/setmessage", "دانانی نامە", "گۆڕینی نامە", "گۆرینی نامە"], ""
-    )
+    ),
+    group=95,
 )
 async def set_custom_caption(client: Client, message: Message):
+    if await joinch(message):
+        return
     chat_id = message.chat.id
     user_id = message.from_user.id
 
@@ -238,32 +251,44 @@ async def set_custom_caption(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                         )
                     ]
                 ]
             ),
         )
-    # Check if a caption is provided
-    if len(message.command) < 2:
-        return await message.reply_text(
-            "**• نامەکە لەگەڵ فەرمان بینووسە یان ڕیپلەی بکە**\n\n- وشەی {name} بۆ نووسینی ناوی کەسەکە\n- وشەی {mention} یوزەری کەناڵەکە\n-دەتوانی ئەم نامەیە بەکاربھێنیت :\n\n- سڵاو {name}\n- نامەکانت دەسڕدرێتەوە بەهۆی جۆین نەکردنت لە کەناڵی گرووپ\n- جۆینی کەناڵ بکە تاوەکو نامەکانت نەسڕدرێتەوە\n- کەناڵ : @{mention}"
-        )
 
-    caption = message.text.split(None, 1)[1]  # Extract the caption
+    # Ask the user for the custom caption
+    t = await message.chat.ask(
+        "**• تکایە نامەی جۆین بنێرە:**\n\n"
+        "- وشەی {name} بۆ نووسینی ناوی کەسەکە\n"
+        "- وشەی {mention} یوزەری کەناڵەکە\n"
+        "- ئەم نامەیە دەتوانیت بەکاربھێنیت :\n\n"
+        "- سڵاو {name}\n"
+        "- نامەکانت دەسڕدرێتەوە بەهۆی جۆین نەکردنت لە کەناڵی گرووپ\n"
+        "- جۆینی کەناڵ بکە تاوەکو نامەکانت نەسڕدرێتەوە\n"
+        "- کەناڵ : @{mention}",
+        filters=filters.text & filters.user(user_id),
+        reply_to_message_id=message.id,
+    )
+
+    caption = t.text  # Get the caption text from the user's reply
 
     # Store the custom caption in MongoDB
     forcesub_collection.update_one(
         {"chat_id": chat_id}, {"$set": {"custom_caption": caption}}, upsert=True
     )
 
-    await message.reply_text("**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**")
+    await t.reply("**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**")
 
 
 @app.on_message(
-    filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], "")
+    filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], ""),
+    group=96,
 )
 async def set_custom_photo(client: Client, message: Message):
+    if await joinch(message):
+        return
     chat_id = message.chat.id
     user_id = message.from_user.id
 
@@ -279,32 +304,36 @@ async def set_custom_photo(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                         )
                     ]
                 ]
             ),
         )
 
-    # Check if the command is a reply to a message with a photo
-    if not message.reply_to_message or not message.reply_to_message.photo:
-        return await message.reply_text(
-            "**• تکایە ڕیپلەی وێنەی نوێ بکە**\n\n- وێنەکە لە گرووپ دابنێ\n- ڕیپلەی بکە و بنووسە گۆڕینی وێنە"
-        )
+    # Ask the user for a new photo
+    prompt = await message.chat.ask(
+        "**• ئێستا وێنەی جۆین بنێرە**\n\n",
+        filters=filters.photo & filters.user(user_id),
+        reply_to_message_id=message.id,
+    )
 
-    # Get the file ID of the photo from the replied message
-    photo_id = message.reply_to_message.photo.file_id
+    # Get the photo file ID from the user's reply
+    photo = prompt.photo
+    photo_id = photo.file_id
 
     # Store the custom photo ID in MongoDB
     forcesub_collection.update_one(
         {"chat_id": chat_id}, {"$set": {"custom_photo_id": photo_id}}, upsert=True
     )
 
-    await message.reply_text("**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**")
+    await prompt.reply("**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**")
 
 
-@app.on_message(filters.command(["/fsubs", "جۆینی ناچاری"], "") & SUDOERS)
+@app.on_message(filters.command(["/fsubs", "جۆینی ناچاری"], "") & SUDOERS, group=97)
 async def get_fsub_stats(client: Client, message: Message):
+    if await joinch(message):
+        return
     try:
         # Count the number of groups where Force Subscription is enabled
         enabled_fsubs = forcesub_collection.count_documents({})
@@ -315,7 +344,7 @@ async def get_fsub_stats(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url=f"https://t.me/piec0flife"
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
                         )
                     ]
                 ]
@@ -327,9 +356,12 @@ async def get_fsub_stats(client: Client, message: Message):
 
 
 @app.on_message(
-    filters.command(["/fsubstats", "/fsubinfo", "زانیاری جۆینی ناچاری"], "") & SUDOERS
+    filters.command(["/fsubstats", "/fsubinfo", "زانیاری جۆینی ناچاری"], "") & SUDOERS,
+    group=98,
 )
 async def get_fsub_stats(client: Client, message: Message):
+    if await joinch(message):
+        return
 
     # Fetch all groups where FSub is enabled from the database
     enabled_groups = forcesub_collection.find({"channel_id": {"$exists": True}})
@@ -381,7 +413,7 @@ async def get_fsub_stats(client: Client, message: Message):
         file_path,
         caption="**• زانیاری گرووپ و کەناڵی جۆینی ناچاری بە وردەکاری:**",
         reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍", url="https://t.me/piec0flife")]]
+            [[InlineKeyboardButton("𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url="https://t.me/GroupAlina")]]
         ),
     )
 
@@ -448,7 +480,7 @@ async def check_forcesub(client: Client, message: Message):
                 photo=custom_photo_id,
                 caption=final_caption.format(
                     name=message.from_user.mention,
-                    mention=channel_username or "Channel",
+                    mention=channel_username,
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -459,8 +491,8 @@ async def check_forcesub(client: Client, message: Message):
                         ],
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍",
-                                url="https://t.me/piec0flife",
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
+                                url="https://t.me/GroupAlina",
                             )
                         ],
                     ]
@@ -470,7 +502,7 @@ async def check_forcesub(client: Client, message: Message):
             await message.reply_text(
                 final_caption.format(
                     name=message.from_user.mention,
-                    mention=channel_username or "Channel",
+                    mention=channel_username,
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -481,8 +513,8 @@ async def check_forcesub(client: Client, message: Message):
                         ],
                         [
                             InlineKeyboardButton(
-                                "𝙋𝙄𝙀𝘾𝙀 O̴F̴ 𝐋𝐈𝐅𝐄💍🤍",
-                                url="https://t.me/piec0flife",
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
+                                url="https://t.me/GroupAlina",
                             )
                         ],
                     ]
@@ -502,7 +534,7 @@ async def check_forcesub(client: Client, message: Message):
     return False
 
 
-@app.on_message(filters.group, group=30)
+@app.on_message(filters.group, group=99)
 async def enforce_forcesub(client: Client, message: Message):
     if not await check_forcesub(client, message):
         return
