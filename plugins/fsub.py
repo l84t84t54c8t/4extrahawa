@@ -4,7 +4,7 @@ import os
 
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
-from AlinaMusic.plugins.play.play import joinch
+from AlinaMusic.utils.decorators.play import joinch
 from config import MONGO_DB_URI
 from pymongo import MongoClient
 from pyrogram import Client, filters
