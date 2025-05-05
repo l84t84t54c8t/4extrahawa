@@ -8,6 +8,7 @@ from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 
+from utils.error import capture_err
 
 MAX_MESSAGE_SIZE_LIMIT = 4090
 
@@ -23,7 +24,7 @@ def humanbytes(size):
 @app.on_message(
     filters.command("ls") & ~filters.forwarded & ~filters.via_bot & SUDOERS, group=86
 )
-@utils.capture_err
+@capture_err
 async def lst(_, message):
     path = os.getcwd()
     text = message.text.split(" ", 1)
@@ -128,7 +129,7 @@ async def lst(_, message):
 @app.on_message(
     filters.command("rm") & ~filters.forwarded & ~filters.via_bot & SUDOERS, group=87
 )
-@utils.capture_err
+@capture_err
 async def rm_files(_, message):
     if len(message.command) < 2:
         return await message.reply("Please provide file(s) or directory(s) to delete.")
