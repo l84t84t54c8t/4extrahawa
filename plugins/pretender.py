@@ -2,7 +2,7 @@ from typing import Dict, Union
 
 from AlinaMusic import app
 from config import MONGO_DB_URI
-from motor.motor_asyncio import AsyncIOMotorClient as MongoCli
+from pymongo import AsyncMongoClient as MongoCli
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter
 from pyrogram.types import Message
