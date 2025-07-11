@@ -163,6 +163,6 @@ async def couples(app, message):
         try:
             os.remove("pfp.png")
             os.remove("pfp1.png")
-            os.remove(f"test_{cid}.png")
+            os.remove(f"downloads/test_{cid}.png")
         except Exception:
             pass
