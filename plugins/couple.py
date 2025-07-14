@@ -147,7 +147,7 @@ async def couples(app, message):
 """
         await app.send_chat_action(message.chat.id, ChatAction.UPLOAD_PHOTO)
         await message.reply_photo(
-            f"downloads/test_{cid}.png",
+            f"test_{cid}.png",
             caption=TXT,
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton(text="👻 خاوەنی بۆت 👻", user_id=OWNER)]]
@@ -163,6 +163,6 @@ async def couples(app, message):
         try:
             os.remove("pfp.png")
             os.remove("pfp1.png")
-            os.remove(f"downloads/test_{cid}.png")
+            os.remove(f"test_{cid}.png")
         except Exception:
             pass
