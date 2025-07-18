@@ -6,6 +6,7 @@ from AlinaMusic.misc import SUDOERS
 from config import LOG_GROUP_ID
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus, ChatType
+from pyrogram.errors import ChannelPrivate, UserNotParticipant
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -80,6 +81,9 @@ async def send_log_to_channel(client, user_id: int, passed: bool, channels: list
 # ----------- SUDOERS COMMAND HANDLER -----------
 
 
+# ... existing code ...
+
+
 @app.on_message(filters.text & filters.private & SUDOERS, group=4377)
 async def handle_sudo_commands(client: Client, message: Message):
     user_id = message.from_user.id
@@ -110,25 +114,42 @@ async def handle_sudo_commands(client: Client, message: Message):
 
         for channel in input_channels:
             try:
-                chat = await client.get_chat(channel)
-
-                # Check channel type
-                if chat.type != ChatType.CHANNEL:
-                    failed.append(channel)
-                    continue
-
-                # Check if bot is ADMINISTRATOR
-                member = await client.get_chat_member(chat.id, bot_id)
-                if member.status != ChatMemberStatus.ADMINISTRATOR:
+                # First try to get chat information
+                try:
+                    chat = await client.get_chat(channel)
+                except (ChannelPrivate, UserNotParticipant):
+                    # If channel is private and bot isn't member, consider as
+                    # not admin
                     not_admin.append(channel)
                     continue
 
-                if channel not in forced_channels:
-                    forced_channels.append(channel)
+                # Check if it's a channel
+                if chat.type != ChatType.CHANNEL:
+                    failed.append(f"{channel} (نەکەناڵ)")
+                    continue
+
+                # Check if bot is ADMINISTRATOR
+                try:
+                    member = await client.get_chat_member(chat.id, bot_id)
+                    if member.status not in [
+                        ChatMemberStatus.ADMINISTRATOR,
+                        ChatMemberStatus.OWNER,
+                    ]:
+                        not_admin.append(channel)
+                        continue
+                except (ChannelPrivate, UserNotParticipant):
+                    not_admin.append(channel)
+                    continue
+
+                # Check if already exists in config
+                channel_id = f"@{chat.username}" if chat.username else str(chat.id)
+                if channel_id not in forced_channels:
+                    forced_channels.append(channel_id)
                     added += 1
                 else:
                     skipped += 1
-            except Exception:
+            except Exception as e:
+                print(f"Error adding channel {channel}: {e}")
                 failed.append(channel)
 
         await update_join_config(forced_channels=forced_channels)
@@ -137,7 +158,9 @@ async def handle_sudo_commands(client: Client, message: Message):
         msg += f"**⚠️ {skipped} پێشتر زیادکراوە\n**" if skipped else ""
         msg += f"**❌ هەڵەیەک ڕوویدا لە:** {' | '.join(failed)}\n" if failed else ""
         msg += (
-            f"**🚫 بۆت ئەدمین نییە لە:** {' | '.join(not_admin)}" if not_admin else ""
+            f"**🚫 بۆت ئەدمین نییە یان نەگەیشت:** {' | '.join(not_admin)}"
+            if not_admin
+            else ""
         )
         await message.reply(msg or "**❌ هیچ کەناڵێک زیاد نەکرا.**")
 
@@ -266,15 +289,31 @@ async def enforce_join(client: Client, message: Message):
 
     if not_joined:
         buttons = []
+        channel_list = []
+
         for c in not_joined:
-            url = (
-                f"https://t.me/{c}"
-                if not c.startswith(("t.me/", "https://"))
-                else (c if c.startswith("https://t.me/") else f"https://{c}")
-            )
+            # Check if it's a private channel
+            if "/" in c or c.startswith(("t.me/", "https://", "http://")):
+                # Private channel - use direct link
+                url = (
+                    c
+                    if c.startswith("https://")
+                    else f"https://t.me/{c.split('/')[-1]}"
+                )
+                channel_list.append(f"• {url}")
+            else:
+                # Public channel - show username
+                url = f"https://t.me/{c}"
+                channel_list.append(f"**• @{c}**")
+
             buttons.append(
-                [InlineKeyboardButton("📥 ئێرە دابگرە بۆ کەناڵەکان", url=url)]
+                [
+                    InlineKeyboardButton(
+                        f"📥 جۆینی کەناڵ بکە {c.split('/')[-1]}", url=url
+                    )
+                ]
             )
+
         buttons.append(
             [
                 InlineKeyboardButton(
@@ -283,8 +322,13 @@ async def enforce_join(client: Client, message: Message):
             ]
         )
 
+        caption = (
+            "**• پێویستە جۆینی هەموو کەناڵەکان بکەیت\n• تاوەکو بتوانیت بۆت بەکاربھێنیت:**\n\n"
+            + "\n".join(channel_list)
+        )
+
         await message.reply(
-            "**• پێویستە جۆینی هەموو کەناڵەکان بکەیت\n• تاوەکو بتوانیت بۆت بەکاربھێنیت:**",
+            caption,
             reply_markup=InlineKeyboardMarkup(buttons),
         )
         await message.stop_propagation()
