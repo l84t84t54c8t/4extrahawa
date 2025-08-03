@@ -318,7 +318,7 @@ async def toggle_welcome_callback(_, query: CallbackQuery):
 
 
 @app.on_message(filters.command(["/welcofefeme", "بەخffێرهاتن"], "") & ~filters.private)
-@utils.adminsOnly("can_change_info")
+@adminsOnly("can_change_info")
 async def toggle_welcome(_, message):
     if len(message.command) < 2:
         return await message.reply_text("**بەکارهێنان:** /welcome [on|off]")
