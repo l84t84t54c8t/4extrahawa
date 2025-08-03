@@ -1,112 +1,139 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
+from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid
+from pyrogram.errors import (
+    ChannelPrivate,
+    ChatAdminRequired,
+    PeerIdInvalid,
+    UserNotParticipant,
+)
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from utils.permissions import adminsOnly
 
-# MongoDB collection for settings
-forwarddb = mongodb.forward  # Ensure you have a collection named 'forward'
+antiforwarddb = mongodb.antiforward  # <-- new collection
 
 
-# Function to enable or disable forwarded message deletion
-async def set_deletion_feature(chat_id: int, status: bool):
-    update_data = {"forwarded_message_deletion": status}
-    result = await forwarddb.update_one(
-        {"chat_id": chat_id}, {"$set": update_data}, upsert=True
+async def enable_forward_lock(chat_id: int):
+    await antiforwarddb.update_one(
+        {"chat_id": chat_id}, {"$set": {"locked": True}}, upsert=True
     )
-    return result.modified_count > 0 or result.upserted_id is not None
 
 
-# Function to check if forwarded message deletion is enabled, default to True
+async def disable_forward_lock(chat_id: int):
+    await antiforwarddb.update_one(
+        {"chat_id": chat_id}, {"$set": {"locked": False}}, upsert=True
+    )
 
 
-async def is_deletion_enabled(chat_id: int) -> bool:
-    try:
-        # Check if the bot is an admin in the group/chat
-        chat_member = await app.get_chat_member(chat_id, (await app.get_me()).id)
-        if chat_member.status == ChatMemberStatus.ADMINISTRATOR:
-            await set_deletion_feature(chat_id, True)  # Enable by default
-            return True
-    except ValueError:
-        print(f"The chat_id {chat_id} belongs to a user, skipping admin check.")
-        return False  # Cannot check for a user ID
-    except PeerIdInvalid:
-        print(f"Invalid chat ID: {chat_id}")
-        return False  # Handle invalid chat IDs
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        return False
-
-    # Check in the database for existing settings
-    data = await forwarddb.find_one({"chat_id": chat_id})
+async def is_forward_locked(chat_id: int) -> bool:
+    data = await antiforwarddb.find_one({"chat_id": chat_id})
     if data is None:
-        return False  # Default to disabled if no data exists
-    return data.get("forwarded_message_deletion", True)
+        return True
+    return data.get("locked", True)
 
 
-# Function to delete forwarded messages only from members
-@app.on_message(filters.forwarded & filters.group, group=150)
-async def delete_forwarded_messages(app, message):
-    if message.chat is None or message.from_user is None:
-        return  # Exit if no chat or user info
 
-    # Check if the forwarded message deletion feature is enabled
-    if not await is_deletion_enabled(message.chat.id):
+@app.on_message(
+    filters.command(["/antiforward", "فۆروارد", "/forward", "ناردنی فۆروارد"], "")
+    & filters.group,
+    group=300,
+)
+async def forward_lock_menu(client, message):
+    user_id = message.from_user.id
+    chat_id = message.chat.id
+
+    try:
+        member = await client.get_chat_member(chat_id, user_id)
+        if not (
+            member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
+            or user_id in SUDOERS
+        ):
+            return await message.reply("🚫 تەنها ئەدمینەکان دەتوانن فەرمان بەکاربهێنن.")
+    except Exception:
+        return await message.reply("❌ ناتوانرێت بزانرێت ئەدمینە یان نا.")
+
+    locked = await is_forward_locked(chat_id)
+    text = f"**🔒 سیستەمی فۆروارد:**\n\nدۆخی فۆروارد: {'❌ داخراوە' if locked else '✅ کراوەتەوە'}"
+
+    buttons = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "❌ داخستنی فۆروارد", callback_data=f"forwardlock:on:{chat_id}"
+                ),
+                InlineKeyboardButton(
+                    "✅ کردنەوەی فۆروارد", callback_data=f"forwardlock:off:{chat_id}"
+                ),
+            ]
+        ]
+    )
+
+    await message.reply(text, reply_markup=buttons)
+
+
+@app.on_callback_query(filters.regex(r"^forwardlock:(on|off):(-?\d+)$"))
+async def handle_forward_lock_callback(client, cb):
+    action, chat_id = cb.data.split(":")[1:]
+    chat_id = int(chat_id)
+    user_id = cb.from_user.id
+
+    try:
+        member = await client.get_chat_member(chat_id, user_id)
+        if not (
+            member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
+            or user_id in SUDOERS
+        ):
+            return await cb.answer(
+                "🚫 تەنها ئەدمینەکان دەتوانن فەرمان بەکاربهێنن.", show_alert=True
+            )
+    except Exception:
+        return await cb.answer("❌ ناتوانرێت ئەنجام بدرێ.", show_alert=True)
+
+    is_locked = await is_forward_locked(chat_id)
+
+    if action == "on":
+        if is_locked:
+            return await cb.answer("⚠️ پێشتر داخراوە.", show_alert=True)
+        await enable_forward_lock(chat_id)
+        await cb.message.edit_text("**❌ ناردنی فۆروارد داخرا.**")
+    else:
+        if not is_locked:
+            return await cb.answer("⚠️ پێشتر کراوەتەوە.", show_alert=True)
+        await disable_forward_lock(chat_id)
+        await cb.message.edit_text("**✅ ناردنی فۆروارد کرایەوە.**")
+
+    await cb.answer()
+
+
+@app.on_message(filters.group & filters.forwarded, group=16)
+async def auto_delete_forwarded_messages(client, message):
+    chat_id = message.chat.id
+
+    if message.sender_chat:
+        return
+
+    user_id = message.from_user.id if message.from_user else None
+    if not user_id:
+        return
+
+    if not await is_forward_locked(chat_id):
         return
 
     try:
-        # Get the user status (member, admin, etc.)
-        chat_member = await app.get_chat_member(message.chat.id, message.from_user.id)
-        if chat_member.status == ChatMemberStatus.MEMBER:
-            # Delete the message only if the user is a regular member
-            await message.delete()
-
-    except MessageDeleteForbidden:
-        print("Bot does not have permission to delete the message.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-
-# Command to enable or disable the forwarded message deletion feature
-@app.on_message(filters.command("forward") & filters.group)
-@adminsOnly("can_delete_messages")
-async def toggle_forwarded_deletion(client, message):
-    action = message.command[1].lower() if len(message.command) > 1 else None
-
-    if action not in ["on", "off"]:
-        await message.reply(
-            "**• کۆنتڕۆڵ کردنی ناردنی ڕێکڵام**\n-بۆ داخستن و کردنەوەی ڕێکڵام لە گرووپ\n\n- داخستنی ڕێکڵام :\n/forward off\n- کردنەوەی ڕێکڵام :\n/forward on"
-        )
+        chat_member = await client.get_chat_member(chat_id, user_id)
+    except UserNotParticipant:
+        return
+    except (PeerIdInvalid, ChannelPrivate, ChatAdminRequired):
+        return
+    except Exception:
         return
 
-    if action == "off":
-        if not await is_deletion_enabled(message.chat.id):
-            # Enable deletion
-            await set_deletion_feature(message.chat.id, True)
-            await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام داخرا ❌**")
-        else:
-            await message.reply("**• ناردنی ڕێکڵام پێشتر داخراوە ❌**")
+    if chat_member.status != ChatMemberStatus.MEMBER:
+        return
 
-    elif action == "on":
-        if await is_deletion_enabled(message.chat.id):
-            # Disable deletion
-            await set_deletion_feature(message.chat.id, False)
-            await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام کرایەوە ✅**")
-        else:
-            await message.reply("**• ناردنی ڕێکڵام پێشتر کراوەتەوە ✅**")
-
-
-# Command to check if forwarded message deletion is enabled
-@app.on_message(filters.command(["/getforward", "ناردنی ڕێکڵام"], "") & filters.group)
-@adminsOnly("can_delete_messages")
-async def check_forwarded_deletion(client, message):
-    # Check if deletion is enabled for the chat
-    deletion_status = await is_deletion_enabled(message.chat.id)
-
-    # Respond with the current status
-    if deletion_status:
-        await message.reply("**• ناردنی ڕێکڵام داخراوە ❌**")
-    else:
-        await message.reply("**• ناردنی ڕێکڵام کراوەتەوە ✅**")
+    try:
+        await message.delete()
+    except Exception:
+        pass
