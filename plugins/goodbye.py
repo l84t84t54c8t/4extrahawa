@@ -7,9 +7,15 @@ from AlinaMusic.utils.database import is_gbanned_user
 from AlinaMusic.utils.functions import check_format, extract_text_and_keyb
 from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
+from pyrogram.enums import ChatMemberStatus as CMS
 from pyrogram.errors import ChatAdminRequired
-from pyrogram.types import (Chat, InlineKeyboardButton, InlineKeyboardMarkup,
-                            Message)
+from pyrogram.types import (
+    Chat,
+    ChatMemberUpdated,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly
@@ -41,13 +47,19 @@ async def handle_left_member(member, chat):
         return
 
 
-@app.on_message(filters.left_chat_member & filters.group, group=31)
+@app.on_chat_member_updated(filters.group, group=103)
 @capture_err
-async def goodbye(_, m: Message):
-    if m.from_user:
-        member = await app.get_users(m.from_user.id)
-        chat = m.chat
-        return await handle_left_member(member, chat)
+async def member_has_left(c: app, member: ChatMemberUpdated):
+    if (
+        member.old_chat_member  # Ensure we have a previous status
+        and member.new_chat_member is None  # User has left or was removed
+        and member.old_chat_member.status
+        not in {CMS.BANNED, CMS.RESTRICTED}  # Ignore bans and restrictions
+    ):
+        chat = member.chat
+        user = member.old_chat_member.user
+        # Call function to process left member
+        await handle_left_member(user, chat)
 
 
 async def send_left_message(chat: Chat, user_id: int, delete: bool = False):
@@ -56,7 +68,7 @@ async def send_left_message(chat: Chat, user_id: int, delete: bool = False):
     if not is_on:
         return
 
-    goodbye, raw_text, file_id = await get_goodbye(chat.id)
+    goodbye, raw_text, file_id = await utils.get_goodbye(chat.id)
 
     if not raw_text:
         return
@@ -99,6 +111,13 @@ async def send_left_message(chat: Chat, user_id: int, delete: bool = False):
             caption=text,
             reply_markup=keyb,
         )
+    elif goodbye == "Video":
+        m = await app.send_video(
+            chat.id,
+            video=file_id,
+            caption=text,
+            reply_markup=keyb,
+        )
     else:
         m = await app.send_animation(
             chat.id,
@@ -108,7 +127,7 @@ async def send_left_message(chat: Chat, user_id: int, delete: bool = False):
         )
 
 
-@app.on_message(filters.command("setgoodbye") & ~filters.private, group=32)
+@app.on_message(filters.command("setgoodbye") & ~filters.private, group=104)
 @adminsOnly("can_change_info")
 async def set_goodbye_func(_, message):
     usage = "Yᴏᴜ ɴᴇᴇᴅ ᴛᴏ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴛᴇxᴛ, ɢɪғ ᴏʀ ᴘʜᴏᴛᴏ ᴛᴏ sᴇᴛ ɪᴛ ᴀs ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ.\n\nᴏᴛᴇs: ᴄᴀᴘᴛɪᴏɴ ʀᴇǫᴜɪʀᴇᴅ ғᴏʀ ɢɪғ ᴀɴᴅ ᴘʜᴏᴛᴏ."
@@ -135,14 +154,21 @@ async def set_goodbye_func(_, message):
             if not text:
                 return await message.reply_text(usage, reply_markup=key)
             raw_text = text.markdown
-        if replied_message.photo:
+        elif replied_message.video:
+            goodbye = "Video"
+            file_id = replied_message.video.file_id
+            text = replied_message.caption
+            if not text:
+                return await message.reply_text(usage, reply_markup=key)
+            raw_text = text.markdown
+        elif replied_message.photo:
             goodbye = "Photo"
             file_id = replied_message.photo.file_id
             text = replied_message.caption
             if not text:
                 return await message.reply_text(usage, reply_markup=key)
             raw_text = text.markdown
-        if replied_message.text:
+        elif replied_message.text:
             goodbye = "Text"
             file_id = None
             text = replied_message.text
@@ -172,7 +198,7 @@ async def set_goodbye_func(_, message):
 
 
 @app.on_message(
-    filters.command(["delgoodbye", "deletegoodbye"]) & ~filters.private, group=33
+    filters.command(["delgoodbye", "deletegoodbye"]) & ~filters.private, group=105
 )
 @adminsOnly("can_change_info")
 async def del_goodbye_func(_, message):
@@ -181,7 +207,7 @@ async def del_goodbye_func(_, message):
     await message.reply_text("Gᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ ʜᴀs ʙᴇᴇɴ Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ")
 
 
-@app.on_message(filters.command("goodbye") & ~filters.private, group=34)
+@app.on_message(filters.command("goodbye") & ~filters.private, group=106)
 @adminsOnly("can_change_info")
 async def goodbye(client, message: Message):
     command = message.text.split()
@@ -227,7 +253,7 @@ async def goodbye(client, message: Message):
 
 async def get_goodbye_func(_, message):
     chat = message.chat
-    goodbye, raw_text, file_id = await get_goodbye(chat.id)
+    goodbye, raw_text, file_id = await utils.get_goodbye(chat.id)
     if not raw_text:
         return await message.reply_text(
             "Dɪᴅ Yᴏᴜ ʀᴇᴍᴇᴍʙᴇʀ ᴛʜᴀᴛ ʏᴏᴜ ʜᴀᴠᴇ sᴇᴛ's ᴀɴᴛ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ"
@@ -236,7 +262,7 @@ async def get_goodbye_func(_, message):
         return await message.reply_text("Yᴏᴜ'ʀᴇ ᴀɴᴏɴ, ᴄᴀɴ'ᴛ sᴇɴᴅ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ.")
 
     await send_left_message(chat, message.from_user.id)
-    is_grt = await is_greetings_on(chat.id, "goodbye")
+    is_grt = await utils.is_greetings_on(chat.id, "goodbye")
     text = None
     if is_grt:
         text = "Tʀᴜᴇ"
