@@ -9,15 +9,23 @@ from AlinaMusic.utils.functions import check_format, extract_text_and_keyb
 from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus as CMS
+from pyrogram.errors import ChatAdminRequired
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
-from pyrogram.types import (Chat, ChatMemberUpdated, InlineKeyboardButton,
-                            InlineKeyboardMarkup)
+from pyrogram.types import (
+    CallbackQuery,
+    Chat,
+    ChatMemberUpdated,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly
-from utils.welcomedb import del_welcome, get_welcome, set_welcome
+from utils.welcomedb import del_welcome, get_welcome, set_welcome, get_welcome_status, set_welcome_status
 
 from .notes import extract_urls
+
+
 
 
 async def handle_new_member(member, chat):
@@ -42,8 +50,8 @@ async def handle_new_member(member, chat):
         return
 
 
-@app.on_chat_member_updated(filters.group, group=6)
-@capture_err
+@app.on_chat_member_updated(filters.group, group=193)
+@utils.capture_err
 async def welcome(_, user: ChatMemberUpdated):
     if not (
         user.new_chat_member
@@ -55,7 +63,14 @@ async def welcome(_, user: ChatMemberUpdated):
     member = user.new_chat_member.user if user.new_chat_member else user.from_user
     if not member:
         return  # Prevent AttributeError if member is None
+
     chat = user.chat
+
+    # Check if welcome is enabled for this group
+    is_welcome_enabled = await get_welcome_status(chat.id)
+    if not is_welcome_enabled:
+        return
+
     return await handle_new_member(member, chat)
 
 
@@ -67,7 +82,7 @@ async def send_welcome_message(chat: Chat, user_id: int, delete: bool = False):
         return
     text = raw_text
     keyb = None
-    if findall(r".+\,.+", raw_text):
+    if findall(r"\[.+\,.+\]", raw_text):
         text, keyb = extract_text_and_keyb(ikb, raw_text)
     u = await app.get_users(user_id)
     if "{GROUPNAME}" in text:
@@ -125,8 +140,7 @@ async def send_welcome_message(chat: Chat, user_id: int, delete: bool = False):
 
 
 @app.on_message(
-    filters.command(["/setwelcome", "دانانی بەخێرهاتن", "/welcome", "بەخێرهاتن"], "")
-    & ~filters.private
+    filters.command(["/setwelcome", "دانانی بەخێرهاتن"], "") & filters.group, group=194
 )
 @adminsOnly("can_change_info")
 async def set_welcome_func(_, message):
@@ -173,7 +187,7 @@ async def set_welcome_func(_, message):
             file_id = None
             text = replied_message.text
             raw_text = text.markdown
-        if replied_message.reply_markup and not findall(r".+\,.+", raw_text):
+        if replied_message.reply_markup and not findall(r"\[.+\,.+\]", raw_text):
             urls = extract_urls(replied_message.reply_markup)
             if urls:
                 response = "\n".join(
@@ -196,26 +210,66 @@ async def set_welcome_func(_, message):
 
 
 @app.on_message(
+    filters.command(["/delwelcome", "سڕینەوەی بەخێرهاتن"], "") & filters.group,
+    group=195,
+)
+@utils.adminsOnly("can_change_info")
+async def del_welcome_func(_, message):
+    # Create an InlineKeyboardMarkup with both buttons on the same line
+    keyboard = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("بەڵێ", callback_data="dwelcome"),
+            ],
+            [
+                InlineKeyboardButton("نەخێر", callback_data="cdelete"),
+            ],
+        ]
+    )
+
+    await message.reply_text(
+        "**کردارێک هەڵبژێرە بۆ سڕینەوەی بەخێرهاتن:**", reply_markup=keyboard
+    )
+
+
+@app.on_callback_query(filters.regex("dwelcome"), group=196)
+async def delete_welcome_callback(_, query: CallbackQuery):
+    chat_id = query.message.chat.id
+    await del_welcome(chat_id)
+    await query.message.edit_text("**بە سەرکەوتوویی نامەی بەخێرهاتن سڕدرایەوە.**")
+
+
+@app.on_callback_query(filters.regex("cdelete"), group=197)
+async def cancel_delete_callback(_, query: CallbackQuery):
+    # Edit the message to inform the user that the action has been canceled
+    await query.message.edit_text("**بە سەرکەوتوویی هەڵوەشێنرایەوە.**")
+
+
+"""
+@app.on_message(
     filters.command(
         ["/delwelcome", "/deletewelcome", "سڕینەوەی بەخێرهاتن", "سرینەوەی بەخێرهاتن"],
         "",
     )
     & ~filters.private
 )
-@adminsOnly("can_change_info")
+@utils.adminsOnly("can_change_info")
 async def del_welcome_func(_, message):
     chat_id = message.chat.id
     await del_welcome(chat_id)
     await message.reply_text("**بە سەرکەوتوویی نامەی بەخێرهاتن سڕدرایەوە**")
 
+"""
+
 
 @app.on_message(
-    filters.command(["/getwelcome", "هێنانی بەخێرهاتن"], "") & ~filters.private
+    filters.command(["/getwelcome", "هێنانی بەخێرهاتن"], "") & ~filters.private,
+    group=198,
 )
-@adminsOnly("can_change_info")
+@utils.adminsOnly("can_change_info")
 async def get_welcome_func(_, message):
     chat = message.chat
-    welcome, raw_text, file_id = await get_welcome(chat.id)
+    welcome, raw_text, file_id = await utils.get_welcome(chat.id)
     if not raw_text:
         return await message.reply_text("**هیچ نامەیەکی بەخێرهاتن دانەنراوە**")
     if not message.from_user:
@@ -230,9 +284,63 @@ async def get_welcome_func(_, message):
     )
 
 
+@app.on_message(
+    filters.command(["/welcome", "بەخێرهاتن"], "") & filters.group, group=199
+)
+@utils.adminsOnly("can_change_info")
+async def toggle_welcome(_, message):
+    keyboard = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("چالاککردن", callback_data="welcome_enable"),
+                InlineKeyboardButton("لە کارخستن", callback_data="welcome_disable"),
+            ]
+        ]
+    )
+    await message.reply_text(
+        "**کردارێک هەڵبژێرە بۆ بەخێرهاتن:**", reply_markup=keyboard
+    )
+
+
+@app.on_callback_query(filters.regex("welcome_enable|welcome_disable"))
+async def toggle_welcome_callback(_, query: CallbackQuery):
+    chat_id = query.message.chat.id
+    action = query.data
+
+    if action == "welcome_enable":
+        await set_welcome_status(chat_id, True)
+        await query.message.edit_text("**ناردنی نامەی بەخێرهاتن چالاککرا.**")
+    elif action == "welcome_disable":
+        await set_welcome_status(chat_id, False)
+        await query.message.edit_text("**ناردنی نامەی بەخێرهاتن لە کارخرا.**")
+
+
+# Command to enable or disable /welcome
+
+
+@app.on_message(filters.command(["/welcofefeme", "بەخffێرهاتن"], "") & ~filters.private)
+@utils.adminsOnly("can_change_info")
+async def toggle_welcome(_, message):
+    if len(message.command) < 2:
+        return await message.reply_text("**بەکارهێنان:** /welcome [on|off]")
+
+    status = message.command[1].lower()
+    chat_id = message.chat.id
+
+    if status == "on" or status == "چالاک":
+        await set_welcome_status(chat_id, True)
+        await message.reply_text("**ناردنی نامەی بەخێرهاتن چالاککرا**")
+    elif status == "off" or status == "ناچالاک":
+        await set_welcome_status(chat_id, False)
+        await message.reply_text("**ناردنی نامەی بەخێرهاتن ناچالاککرا**")
+    else:
+        await message.reply_text("**هەڵە نووسیوتە! بنووسە /welcome [on|off]**")
+
+
 __MODULE__ = "Wᴇʟᴄᴏᴍᴇ"
 __HELP__ = """
-/welcome - Rᴇᴘʟʏ ᴛʜɪs ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴄᴏɴᴛᴀɪɴɪɴɢ ᴄᴏʀʀᴇᴄᴛ
+/welcome  [ᴏɴ, ʏ, ᴛʀᴜᴇ, ᴇɴᴀʙʟᴇ, ᴛ] - ᴛᴏ ᴛᴜʀɴ ᴏɴ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs
+/welcome [ᴏғғ, ɴ, ғᴀʟsᴇ, ᴅɪsᴀʙʟᴇ, ғ, ɴᴏ] - ᴛᴏ ᴛᴜʀɴ ᴏғғ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs
 /setwelcome - Rᴇᴘʟʏ ᴛʜɪs ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴄᴏɴᴛᴀɪɴɪɴɢ ᴄᴏʀʀᴇᴄᴛ
 ғᴏʀᴍᴀᴛ ғᴏʀ ᴀ ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ, ᴄʜᴇᴄᴋ ᴇɴᴅ ᴏғ ᴛʜɪs ᴍᴇssᴀɢᴇ.
 
