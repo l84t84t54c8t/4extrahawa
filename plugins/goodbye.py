@@ -68,7 +68,7 @@ async def send_left_message(chat: Chat, user_id: int, delete: bool = False):
     if not is_on:
         return
 
-    goodbye, raw_text, file_id = await utils.get_goodbye(chat.id)
+    goodbye, raw_text, file_id = await get_goodbye(chat.id)
 
     if not raw_text:
         return
@@ -253,7 +253,7 @@ async def goodbye(client, message: Message):
 
 async def get_goodbye_func(_, message):
     chat = message.chat
-    goodbye, raw_text, file_id = await utils.get_goodbye(chat.id)
+    goodbye, raw_text, file_id = await get_goodbye(chat.id)
     if not raw_text:
         return await message.reply_text(
             "Dɪᴅ Yᴏᴜ ʀᴇᴍᴇᴍʙᴇʀ ᴛʜᴀᴛ ʏᴏᴜ ʜᴀᴠᴇ sᴇᴛ's ᴀɴᴛ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ"
@@ -262,7 +262,7 @@ async def get_goodbye_func(_, message):
         return await message.reply_text("Yᴏᴜ'ʀᴇ ᴀɴᴏɴ, ᴄᴀɴ'ᴛ sᴇɴᴅ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ.")
 
     await send_left_message(chat, message.from_user.id)
-    is_grt = await utils.is_greetings_on(chat.id, "goodbye")
+    is_grt = await is_greetings_on(chat.id, "goodbye")
     text = None
     if is_grt:
         text = "Tʀᴜᴇ"
