@@ -15,114 +15,106 @@ logging.basicConfig(
 
 
 async def member_permissions(chat_id: int, user_id: int) -> list[str]:
-    """
-    Retrieve a user's permissions in a chat.
-    """
-    perms = []
+    """Fetches the permissions of a member in a chat."""
     member = (await app.get_chat_member(chat_id, user_id)).privileges
-    if not member:
-        return perms
-    if member.can_post_messages:
-        perms.append("can_post_messages")
-    if member.can_edit_messages:
-        perms.append("can_edit_messages")
-    if member.can_delete_messages:
-        perms.append("can_delete_messages")
-    if member.can_restrict_members:
-        perms.append("can_restrict_members")
-    if member.can_promote_members:
-        perms.append("can_promote_members")
-    if member.can_change_info:
-        perms.append("can_change_info")
-    if member.can_invite_users:
-        perms.append("can_invite_users")
-    if member.can_pin_messages:
-        perms.append("can_pin_messages")
-    if member.can_manage_video_chats:
-        perms.append("can_manage_video_chats")
-    return perms
+    return (
+        [
+            perm
+            for perm, has_perm in {
+                "can_post_messages": member.can_post_messages,
+                "can_edit_messages": member.can_edit_messages,
+                "can_delete_messages": member.can_delete_messages,
+                "can_restrict_members": member.can_restrict_members,
+                "can_promote_members": member.can_promote_members,
+                "can_change_info": member.can_change_info,
+                "can_invite_users": member.can_invite_users,
+                "can_pin_messages": member.can_pin_messages,
+                "can_manage_video_chats": member.can_manage_video_chats,
+            }.items()
+            if has_perm
+        ]
+        if member
+        else []
+    )
 
 
-async def bot_permissions(chat_id: int) -> list[str]:
-    """
-    Retrieve the bot's permissions in a chat.
-    """
+async def bot_permissions(chat_id: int):
+    perms = []
     return await member_permissions(chat_id, app.id)
 
 
-async def authorised(func, client, message: Message, *args, **kwargs):
-    """
-    Wrapper for handling authorised actions with error management.
-    """
+async def authorised(func, subFunc2, client, message, *args, **kwargs):
+    chatID = message.chat.id
     try:
         await func(client, message, *args, **kwargs)
     except ChatWriteForbidden:
-        logging.error(
-            f"Bot lacks permission to write in chat {message.chat.id}. Leaving the chat."
-        )
-        await app.leave_chat(message.chat.id)
+        await client.leave_chat(chatID)
     except Exception as e:
-        logging.exception(f"Error in authorised function: {e}")
+        logging.exception(e)  # Logs full error traceback
         try:
-            await message.reply_text(f"**Error:** {str(e)}")
-        except ChatWriteForbidden:
-            await app.leave_chat(message.chat.id)
-        logging.debug(f"Traceback: {format_exc()}")
+            await message.reply_text(str(getattr(e, "MESSAGE", e)))
+        except Exception:
+            await message.reply_text(str(e))  # Fallback message
+    return subFunc2
 
 
-async def unauthorised(message: Message, permission: str, bot_lacking_permission=False):
-    """
-    Notify a user of unauthorised access.
-    """
-    chat_id = message.chat.id
-    text = (
-        f"**👮🏻 | ببورە، تۆ ڕۆڵت نییە**\n"
-        f"**👮🏻 | پێویستە ڕۆڵی  __{permission}__ هەبێت!**"
-    )
+async def unauthorised(
+    message: Message, permission, subFunc2, bot_lacking_permission=False
+):
+    chatID = message.chat.id
+
     if bot_lacking_permission:
-        text = f"**❌ بۆت ڕۆڵی نییە\nڕۆڵی:** `{permission}`."
+        text = (
+            f"**🤖 | من ئەدمین نیم لێرە!**"
+            f"**\n⛔️ | پێویستم بە ڕۆڵی __{permission}__ هەیە لە گرووپەکە.**"
+        )
+    else:
+        text = (
+            "**👮🏻 | ببورە، تۆ ڕۆڵت نییە**"
+            + f"\n**👮🏻 | پێویستە ڕۆڵی** __{permission}__ هەبێت !**"
+        )
 
     try:
         await message.reply_text(text)
     except ChatWriteForbidden:
-        logging.error(f"Bot cannot send messages in chat {chat_id}. Leaving the chat.")
-        await app.leave_chat(chat_id)
+        await client.leave_chat(chatID)
+
+    return subFunc2
 
 
-def adminsOnly(permission: str):
-    """
-    Decorator to enforce admin-only commands with specific permissions.
-    """
-
-    def decorator(func):
+def adminsOnly(permission):
+    def subFunc(func):
         @wraps(func)
-        async def wrapper(client, message: Message, *args, **kwargs):
-            chat_id = message.chat.id
+        async def subFunc2(client, message: Message, *args, **kwargs):
+            chatID = message.chat.id
 
-            # Check bot's permissions
-            bot_perms = await bot_permissions(chat_id)
+            # Check if the bot has the required permission
+            bot_perms = await bot_permissions(chatID)
             if permission not in bot_perms:
                 return await unauthorised(
-                    message, permission, bot_lacking_permission=True
+                    message, permission, subFunc2, bot_lacking_permission=True
                 )
 
-            # Handle anonymous admins
             if not message.from_user:
-                if message.sender_chat and message.sender_chat.id == chat_id:
-                    return await authorised(func, client, message, *args, **kwargs)
-                return await unauthorised(message, permission)
+                # For anonymous admins
+                if message.sender_chat and message.sender_chat.id == message.chat.id:
+                    return await authorised(
+                        func,
+                        subFunc2,
+                        client,
+                        message,
+                        *args,
+                        **kwargs,
+                    )
+                return await unauthorised(message, permission, subFunc2)
 
-            # Handle regular users and SUDOERS
-            user_id = message.from_user.id
-            if user_id in SUDOERS:
-                return await authorised(func, client, message, *args, **kwargs)
+            # For admins and sudo users
+            userID = message.from_user.id
+            permissions = await member_permissions(chatID, userID)
+            if userID not in SUDOERS and permission not in permissions:
+                return await unauthorised(message, permission, subFunc2)
+            return await authorised(func, subFunc2, client, message, *args, **kwargs)
 
-            user_perms = await member_permissions(chat_id, user_id)
-            if permission not in user_perms:
-                return await unauthorised(message, permission)
+        return subFunc2
 
-            return await authorised(func, client, message, *args, **kwargs)
-
-        return wrapper
-
-    return decorator
+    return subFunc
