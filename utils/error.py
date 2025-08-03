@@ -41,28 +41,46 @@ def capture_err(func):
         try:
             return await func(client, message, *args, **kwargs)
         except ChatWriteForbidden:
-            await app.leave_chat(message.chat.id)
+            if isinstance(message, Message):
+                await app.leave_chat(message.chat.id)
+            elif isinstance(message, CallbackQuery):
+                await app.leave_chat(message.message.chat.id)
             return
         except Exception as err:
             errors = traceback.format_exc()
+
+            # Setup defaults
+            user_mention = "❌"
+            chat_info = "❌"
+            command = "N/A"
+
+            if isinstance(message, Message):
+                user_mention = message.from_user.mention if message.from_user else "❌"
+                chat_info = (
+                    f"@{message.chat.username}"
+                    if message.chat and message.chat.username
+                    else f"`{message.chat.id}`" if message.chat else "❌"
+                )
+                command = message.text or message.caption or "❌"
+            elif isinstance(message, CallbackQuery):
+                user_mention = message.from_user.mention if message.from_user else "❌"
+                chat = message.message.chat if message.message else None
+                chat_info = (
+                    f"@{chat.username}"
+                    if chat and chat.username
+                    else f"`{chat.id}`" if chat else "❌"
+                )
+                command = message.data or "❌"
+
             error_feedback = split_limits(
-                "**ERROR** | {} | {}\n```command\n{}```\n\n```python\n{}```\n".format(
-                    0 if not message.from_user else message.from_user.mention,
-                    (
-                        0
-                        if not message.chat
-                        else (
-                            f"@{message.chat.username}"
-                            if message.chat.username
-                            else f"`{message.chat.id}`"
-                        )
-                    ),
-                    message.text or message.caption,
-                    "".join(errors),
-                ),
+                f"**ERROR** | {user_mention} | {chat_info}\n"
+                f"```command\n{command}```\n\n"
+                f"```python\n{''.join(errors)}```\n"
             )
+
             for x in error_feedback:
                 await app.send_message(LOG_GROUP_ID, x)
+
             raise err
 
     return capture
