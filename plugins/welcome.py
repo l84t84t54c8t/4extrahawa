@@ -51,7 +51,7 @@ async def handle_new_member(member, chat):
 
 
 @app.on_chat_member_updated(filters.group, group=193)
-@utils.capture_err
+@capture_err
 async def welcome(_, user: ChatMemberUpdated):
     if not (
         user.new_chat_member
@@ -213,7 +213,7 @@ async def set_welcome_func(_, message):
     filters.command(["/delwelcome", "سڕینەوەی بەخێرهاتن"], "") & filters.group,
     group=195,
 )
-@utils.adminsOnly("can_change_info")
+@adminsOnly("can_change_info")
 async def del_welcome_func(_, message):
     # Create an InlineKeyboardMarkup with both buttons on the same line
     keyboard = InlineKeyboardMarkup(
@@ -241,7 +241,6 @@ async def delete_welcome_callback(_, query: CallbackQuery):
 
 @app.on_callback_query(filters.regex("cdelete"), group=197)
 async def cancel_delete_callback(_, query: CallbackQuery):
-    # Edit the message to inform the user that the action has been canceled
     await query.message.edit_text("**بە سەرکەوتوویی هەڵوەشێنرایەوە.**")
 
 
@@ -253,7 +252,7 @@ async def cancel_delete_callback(_, query: CallbackQuery):
     )
     & ~filters.private
 )
-@utils.adminsOnly("can_change_info")
+@adminsOnly("can_change_info")
 async def del_welcome_func(_, message):
     chat_id = message.chat.id
     await del_welcome(chat_id)
@@ -266,10 +265,10 @@ async def del_welcome_func(_, message):
     filters.command(["/getwelcome", "هێنانی بەخێرهاتن"], "") & ~filters.private,
     group=198,
 )
-@utils.adminsOnly("can_change_info")
+@adminsOnly("can_change_info")
 async def get_welcome_func(_, message):
     chat = message.chat
-    welcome, raw_text, file_id = await utils.get_welcome(chat.id)
+    welcome, raw_text, file_id = await get_welcome(chat.id)
     if not raw_text:
         return await message.reply_text("**هیچ نامەیەکی بەخێرهاتن دانەنراوە**")
     if not message.from_user:
@@ -287,7 +286,7 @@ async def get_welcome_func(_, message):
 @app.on_message(
     filters.command(["/welcome", "بەخێرهاتن"], "") & filters.group, group=199
 )
-@utils.adminsOnly("can_change_info")
+@adminsOnly("can_change_info")
 async def toggle_welcome(_, message):
     keyboard = InlineKeyboardMarkup(
         [
