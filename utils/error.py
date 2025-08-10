@@ -13,7 +13,9 @@ from functools import wraps
 
 from AlinaMusic import app
 from config import LOG_GROUP_ID
-from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
+from pyrogram.errors import ChatWriteForbidden
+from pyrogram.types import CallbackQuery, Message
+
 
 
 def split_limits(text):
