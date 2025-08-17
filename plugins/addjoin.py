@@ -274,7 +274,7 @@ async def check_join_button(client: Client, callback: CallbackQuery):
 
 
 # ---------- ENFORCE JOIN ----------
-@bot.on_message(filters.incoming & filters.private, group=-3)
+@app.on_message(filters.incoming & filters.private, group=-3)
 async def enforce_join(client, message):
     user_id = message.from_user.id
     forced_channels, join_required = await get_join_config()
