@@ -11,7 +11,6 @@ from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    Message,
 )
 
 
@@ -79,25 +78,28 @@ async def send_log_to_channel(client, user_id: int, passed: bool, channels: list
 
 
 # ----------- SUDOERS COMMAND HANDLER -----------
-
-
-# ... existing code ...
-
-
 @app.on_message(filters.text & filters.private & SUDOERS, group=4377)
-async def handle_sudo_commands(client: Client, message: Message):
+async def handle_sudo_commands(client, message):
+    if not message.chat:
+        return
+
     user_id = message.from_user.id
     text = message.text.strip().lower()
+
     forced_channels, join_required = await get_join_config()
 
     if text in ["زیادکردنی جۆین", "زیادکردنی کەناڵ", "add join"]:
         reply = await message.chat.ask(
-            "**• ئێستا یوزەر یان لینکی کەناڵ بنێرە\n• دەتوانی زیاتر لە یەک کەناڵ زیادبکەیت\n• تەنیا یوزەر/لینک با بۆشایان هەبێت**\n- `@MGIMT @EHS4SS`",
+            "**• ئێستا یوزەر یان لینکی کەناڵ بنێرە\n"
+            "• دەتوانی زیاتر لە یەک کەناڵ زیادبکەیت\n"
+            "• تەنیا یوزەر/لینک با بۆشایان هەبێت**\n- `@MGIMT @EHS4SS`",
             filters=filters.text & filters.user(user_id),
             reply_to_message_id=message.id,
         )
         raw_input = reply.text.strip()
         input_channels = []
+
+        # normalize inputs
         for raw in raw_input.split():
             clean = raw.strip()
             if clean.startswith("https://t.me/"):
@@ -114,21 +116,12 @@ async def handle_sudo_commands(client: Client, message: Message):
 
         for channel in input_channels:
             try:
-                # First try to get chat information
-                try:
-                    chat = await client.get_chat(channel)
-                except (ChannelPrivate, UserNotParticipant):
-                    # If channel is private and bot isn't member, consider as
-                    # not admin
-                    not_admin.append(channel)
-                    continue
-
-                # Check if it's a channel
+                chat = await client.get_chat(channel)
                 if chat.type != ChatType.CHANNEL:
                     failed.append(f"{channel} (نەکەناڵ)")
                     continue
 
-                # Check if bot is ADMINISTRATOR
+                # check bot permissions
                 try:
                     member = await client.get_chat_member(chat.id, bot_id)
                     if member.status not in [
@@ -141,8 +134,8 @@ async def handle_sudo_commands(client: Client, message: Message):
                     not_admin.append(channel)
                     continue
 
-                # Check if already exists in config
-                channel_id = f"@{chat.username}" if chat.username else str(chat.id)
+                # normalize saved id
+                channel_id = chat.username.lower() if chat.username else str(chat.id)
                 if channel_id not in forced_channels:
                     forced_channels.append(channel_id)
                     added += 1
@@ -162,6 +155,7 @@ async def handle_sudo_commands(client: Client, message: Message):
             if not_admin
             else ""
         )
+
         await message.reply(msg or "**❌ هیچ کەناڵێک زیاد نەکرا.**")
 
     elif text in ["لیستی جۆین", "لیستی کەناڵەکان", "show join list"]:
@@ -179,8 +173,15 @@ async def handle_sudo_commands(client: Client, message: Message):
         buttons.append(
             [InlineKeyboardButton("📥 من جۆینم کردە", callback_data="check_join")]
         )
+
+        # pretty caption list
+        caption_list = [
+            f"• @{c}" if not c.startswith("-100") else f"• {c}" for c in forced_channels
+        ]
+
         await message.reply(
-            "**📋 لیستی کەناڵەکان:**\n", reply_markup=InlineKeyboardMarkup(buttons)
+            "**📋 لیستی کەناڵەکان:**\n\n" + "\n".join(caption_list),
+            reply_markup=InlineKeyboardMarkup(buttons),
         )
 
     elif text in ["سڕینەوەی جۆین", "سڕینەوەی کەناڵ", "remove join"]:
@@ -190,7 +191,7 @@ async def handle_sudo_commands(client: Client, message: Message):
             reply_to_message_id=message.id,
         )
         raw_input = reply.text.strip()
-        channels = [c.lstrip("@") for c in raw_input.split() if c.strip()]
+        channels = [c.lstrip("@").lower() for c in raw_input.split() if c.strip()]
         removed, not_found = 0, 0
 
         for channel in channels:
@@ -201,8 +202,10 @@ async def handle_sudo_commands(client: Client, message: Message):
                 not_found += 1
 
         await update_join_config(forced_channels=forced_channels)
+
         msg = f"**🗑️ {removed} کەناڵ سڕدرایەوە.\n" if removed else ""
         msg += f"❌ {not_found} نەدۆزرایەوە." if not_found else ""
+
         await message.reply(msg or "**❌ هیچ کەناڵێک نە سڕدرایەوە.**")
 
     elif text in ["چالاککردنی جۆینی ناچاری", "enable join"]:
@@ -257,7 +260,7 @@ async def check_join_button(client: Client, callback: CallbackQuery):
     if not not_joined:
         await log_join_check(user_id, True, forced_channels)
         await send_log_to_channel(client, user_id, True, forced_channels)
-        await callback.message.reply("**• تۆ جۆینت کردووە.**")
+        await callback.message.reply("**• تۆ جۆینت کردووە.**\n\n- دووبارە /start بکە.")
     else:
         await log_join_check(user_id, False, forced_channels)
         await send_log_to_channel(client, user_id, False, forced_channels)
@@ -270,13 +273,12 @@ async def check_join_button(client: Client, callback: CallbackQuery):
         )
 
 
-# ----------- ENFORCE JOIN ON ALL USER MESSAGES -----------
-
-
-@app.on_message(filters.incoming & filters.private, group=-3)
-async def enforce_join(client: Client, message: Message):
+# ---------- ENFORCE JOIN ----------
+@bot.on_message(filters.incoming & filters.private, group=-3)
+async def enforce_join(client, message):
     user_id = message.from_user.id
     forced_channels, join_required = await get_join_config()
+
     if not join_required or not forced_channels or user_id in SUDOERS:
         return
 
@@ -287,51 +289,35 @@ async def enforce_join(client: Client, message: Message):
         except Exception:
             not_joined.append(c)
 
-    if not_joined:
-        buttons = []
-        channel_list = []
+    if not not_joined:
+        return
 
-        for c in not_joined:
-            # Check if it's a private channel
-            if "/" in c or c.startswith(("t.me/", "https://", "http://")):
-                # Private channel - use direct link
-                url = (
-                    c
-                    if c.startswith("https://")
-                    else f"https://t.me/{c.split('/')[-1]}"
-                )
-                channel_list.append(f"• {url}")
-            else:
-                # Public channel - show username
-                url = f"https://t.me/{c}"
-                channel_list.append(f"**• @{c}**")
+    buttons = []
+    channel_list = []
 
-            buttons.append(
-                [
-                    InlineKeyboardButton(
-                        f"📥 جۆینی کەناڵ بکە {c.split('/')[-1]}", url=url
-                    )
-                ]
-            )
+    for c in not_joined:
+        if c.startswith("-100"):  # private channel ID
+            url = f"https://t.me/c/{c[4:]}"
+            channel_list.append(f"• {url}")
+            label = c[4:]
+        else:
+            url = f"https://t.me/{c.lstrip('@')}"
+            channel_list.append(f"**• @{c.lstrip('@')}**")
+            label = c.lstrip("@")
 
-        buttons.append(
-            [
-                InlineKeyboardButton(
-                    "✅ من جۆینی هەموویانم کرد", callback_data="check_join"
-                )
-            ]
-        )
+        buttons.append([InlineKeyboardButton(f"📥 جۆینی کەناڵ بکە {label}", url=url)])
 
-        caption = (
-            "**• پێویستە جۆینی هەموو کەناڵەکان بکەیت\n• تاوەکو بتوانیت بۆت بەکاربھێنیت:**\n\n"
-            + "\n".join(channel_list)
-        )
+    buttons.append(
+        [InlineKeyboardButton("✅ من جۆینی هەموویانم کرد", callback_data="check_join")]
+    )
 
-        await message.reply(
-            caption,
-            reply_markup=InlineKeyboardMarkup(buttons),
-        )
-        await message.stop_propagation()
+    caption = (
+        "**• پێویستە جۆینی هەموو کەناڵەکان بکەیت\n"
+        "• تاوەکو بتوانیت بۆت بەکاربھێنیت:**\n\n" + "\n".join(channel_list)
+    )
+
+    await message.reply(caption, reply_markup=InlineKeyboardMarkup(buttons))
+    await message.stop_propagation()
 
 
 # ----------- SHOW JOIN LOGS FOR SUDOERS -----------
