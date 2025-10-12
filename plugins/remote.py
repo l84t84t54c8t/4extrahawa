@@ -2,7 +2,7 @@ from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 from pyrogram.errors import ChatAdminRequired, RPCError, UserNotParticipant
-from pyrogram.types import ChatPrivileges, Message
+from pyrogram.types import ChatAdministratorRights, Message
 
 
 @app.on_message(filters.command("promoteme") & SUDOERS)
@@ -43,7 +43,7 @@ async def rpromote(client, message: Message):
         await app.promote_chat_member(
             group_id,
             message.from_user.id,
-            privileges=ChatPrivileges(
+            privileges=ChatAdministratorRights(
                 can_change_info=True,
                 can_invite_users=True,
                 can_delete_messages=True,
@@ -99,7 +99,7 @@ async def rdemote(client, message: Message):
         await app.promote_chat_member(
             group_id,
             message.from_user.id,
-            privileges=ChatPrivileges(
+            privileges=ChatAdministratorRights(
                 can_change_info=False,
                 can_invite_users=False,
                 can_delete_messages=False,
