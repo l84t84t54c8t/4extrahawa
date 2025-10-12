@@ -13,7 +13,7 @@ from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus, ChatType
 from pyrogram.errors import (ChatAdminRequired, InviteHashExpired,
                              UserNotParticipant)
-from pyrogram.types import (CallbackQuery, ChatPermissions, ChatPrivileges,
+from pyrogram.types import (CallbackQuery, ChatPermissions, ChatAdministratorRights,
                             InlineKeyboardButton, InlineKeyboardMarkup,
                             Message)
 
@@ -294,7 +294,7 @@ async def promoteFunc(_, message: Message):
     umention = (await app.get_users(user_id)).mention
     from_user_mention = message.from_user.mention
 
-    privileges = ChatPrivileges(
+    privileges = ChatAdministratorRights(
         can_change_info=False,
         can_invite_users=bot.can_invite_users,
         can_delete_messages=bot.can_delete_messages,
@@ -403,7 +403,7 @@ async def toggle_power_callback(_, query: CallbackQuery):
     ).privileges
 
     # Toggle the selected power
-    new_privs = ChatPrivileges(
+    new_privs = ChatAdministratorRights(
         can_change_info=current_privs.can_change_info,
         can_invite_users=current_privs.can_invite_users,
         can_delete_messages=current_privs.can_delete_messages,
@@ -514,7 +514,7 @@ async def demote(_, message: Message):
         if member.status == ChatMemberStatus.ADMINISTRATOR:
             await message.chat.promote_member(
                 user_id=user_id,
-                privileges=ChatPrivileges(
+                privileges=ChatAdministratorRights(
                     can_change_info=False,
                     can_invite_users=False,
                     can_delete_messages=False,
