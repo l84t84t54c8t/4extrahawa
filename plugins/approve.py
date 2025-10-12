@@ -18,7 +18,7 @@ from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter
 from pyrogram.errors.exceptions.bad_request_400 import UserAlreadyParticipant
-from pyrogram.types import (ChatJoinRequest, ChatPrivileges,
+from pyrogram.types import (ChatJoinRequest, ChatAdministratorRights,
                             InlineKeyboardButton, InlineKeyboardMarkup)
 
 from utils.permissions import adminsOnly, member_permissions
@@ -152,7 +152,7 @@ async def approve_all(client, message):
             await app.promote_chat_member(
                 chat_id,
                 userbot.id,
-                privileges=ChatPrivileges(
+                privileges=ChatAdministratorRights(
                     can_change_info=True,
                     can_invite_users=True,
                 ),
