@@ -3,7 +3,7 @@ from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import get_assistant
 from pyrogram import filters
 from pyrogram.errors import UserNotParticipant
-from pyrogram.types import (ChatPrivileges, InlineKeyboardButton,
+from pyrogram.types import (ChatAdministratorRights, InlineKeyboardButton,
                             InlineKeyboardMarkup, Message)
 
 from utils.permissions import adminsOnly
@@ -37,7 +37,7 @@ async def purge_user_func(_, message: Message):
             await app.promote_chat_member(
                 chat_id=message.chat.id,
                 user_id=userbot.id,
-                privileges=ChatPrivileges(can_manage_chat=True),
+                privileges=ChatAdministratorRights(can_manage_chat=True),
             )
 
             ok = await message.reply_text(
