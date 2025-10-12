@@ -8,7 +8,7 @@ from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import (
     CallbackQuery,
     ChatPermissions,
-    ChatPrivileges,
+    ChatAdministratorRights,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     Message,
@@ -88,7 +88,7 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
         await app.promote_chat_member(
             chat_id,
             assid,
-            privileges=ChatPrivileges(
+            privileges=ChatAdministratorRights(
                 can_manage_chat=False,
                 can_delete_messages=True,
                 can_manage_video_chats=False,
@@ -110,7 +110,7 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
             await app.promote_chat_member(
                 chat_id,
                 assid,
-                privileges=ChatPrivileges(
+                privileges=ChatAdministratorRights(
                     can_manage_chat=False,
                     can_delete_messages=False,
                     can_manage_video_chats=False,
