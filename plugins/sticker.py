@@ -18,6 +18,7 @@ from pyrogram.errors import (
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
+from utils.error import capture_err
 
 BOT_USERNAME = app.username
 
@@ -149,7 +150,7 @@ async def get_document_from_file_id(
 
 
 @app.on_message(filters.command("stickerid"), group=164)
-@utils.capture_err
+@capture_err
 async def sticker_id(_, message: Message):
     reply = message.reply_to_message
 
@@ -163,7 +164,7 @@ async def sticker_id(_, message: Message):
 
 
 @app.on_message(filters.command("getsticker"), group=165)
-@utils.capture_err
+@capture_err
 async def sticker_image(_, message: Message):
     r = message.reply_to_message
 
@@ -188,7 +189,7 @@ async def sticker_image(_, message: Message):
 
 
 @app.on_message(filters.command("kang"), group=166)
-@utils.capture_err
+@capture_err
 async def kang(client, message: Message):
     if not message.reply_to_message:
         return await message.reply_text("Reply to a sticker/image to kang it.")
