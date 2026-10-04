@@ -265,7 +265,6 @@ async def get_reply(message, type, file_id, data, keyb):
         await message.reply_text(
             text=data,
             reply_markup=keyb,
-            disable_web_page_preview=True,
         )
     if type == "sticker":
         await message.reply_sticker(

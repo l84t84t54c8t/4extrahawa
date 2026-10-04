@@ -80,7 +80,6 @@ async def whois(client, message):
             last_online=LastOnline(user),
             bio=desc if desc else "ᴇᴍᴩᴛʏ.",
         ),
-        disable_web_page_preview=True,
     )
 
 

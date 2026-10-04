@@ -34,7 +34,6 @@ async def echo(bot, message):
     kul_text, keyboard = figle(text)
     await message.reply_text(
         f"ʜᴇʀᴇ ɪs ʏᴏᴜʀ ғɪɢʟᴇᴛ :\n<pre>{kul_text}</pre>",
-        quote=True,
         reply_markup=keyboard,
     )
 

@@ -108,10 +108,10 @@ async def info_func(_, message: Message):
         return await m.edit(str(e))
 
     if not photo_id:
-        return await m.edit(info_caption, disable_web_page_preview=True)
+        return await m.edit(info_caption)
     photo = await app.download_media(photo_id)
 
-    await message.reply_photo(photo, caption=info_caption, quote=False)
+    await message.reply_photo(photo, caption=info_caption)
     await m.delete()
     os.remove(photo)
 
@@ -130,10 +130,10 @@ async def chat_info_func(_, message: Message):
 
         info_caption, photo_id = await get_chat_info(chat)
         if not photo_id:
-            return await m.edit(info_caption, disable_web_page_preview=True)
+            return await m.edit(info_caption)
 
         photo = await app.download_media(photo_id)
-        await message.reply_photo(photo, caption=info_caption, quote=False)
+        await message.reply_photo(photo, caption=info_caption)
 
         await m.delete()
         os.remove(photo)

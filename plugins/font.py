@@ -2410,7 +2410,6 @@ async def style_buttons(c, m, cb=False):
         await m.reply_text(
             text=m.text.split(None, 1)[1],
             reply_markup=InlineKeyboardMarkup(buttons),
-            quote=True,
         )
     else:
         await m.answer()

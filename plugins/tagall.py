@@ -61,11 +61,11 @@ async def tag_all_users(_, message):
             if user_count == 7:
                 if replied:
                     await replied.reply_text(
-                        mention_text, disable_web_page_preview=True
+                        mention_text
                     )
                 else:
                     await message.reply_text(
-                        f"{text}\n\n{mention_text}", disable_web_page_preview=True
+                        f"{text}\n\n{mention_text}"
                     )
                 await asyncio.sleep(2)
                 user_count = 0
@@ -73,10 +73,10 @@ async def tag_all_users(_, message):
 
         if user_count > 0:
             if replied:
-                await replied.reply_text(mention_text, disable_web_page_preview=True)
+                await replied.reply_text(mention_text)
             else:
                 await message.reply_text(
-                    f"{text}\n\n{mention_text}", disable_web_page_preview=True
+                    f"{text}\n\n{mention_text}"
                 )
     except FloodWait as e:
         print(f"FloodWait: Sleeping for {e.value} seconds")
@@ -179,11 +179,11 @@ async def tag_all_admins(_, message):
             if admin_count == 7:
                 if replied:
                     await replied.reply_text(
-                        mention_text, disable_web_page_preview=True
+                        mention_text
                     )
                 else:
                     await message.reply_text(
-                        f"{text}\n\n{mention_text}", disable_web_page_preview=True
+                        f"{text}\n\n{mention_text}"
                     )
                 await asyncio.sleep(2)
                 admin_count = 0
@@ -191,10 +191,10 @@ async def tag_all_admins(_, message):
 
         if admin_count > 0:
             if replied:
-                await replied.reply_text(mention_text, disable_web_page_preview=True)
+                await replied.reply_text(mention_text)
             else:
                 await message.reply_text(
-                    f"{text}\n\n{mention_text}", disable_web_page_preview=True
+                    f"{text}\n\n{mention_text}"
                 )
     except FloodWait as e:
         print(f"FloodWait: Sleeping for {e.value} seconds")

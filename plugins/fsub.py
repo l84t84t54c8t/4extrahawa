@@ -517,7 +517,6 @@ async def check_forcesub(client: Client, message: Message):
                         ],
                     ]
                 ),
-                disable_web_page_preview=True,
             )
         await asyncio.sleep(1)
 

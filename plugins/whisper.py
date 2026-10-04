@@ -25,7 +25,7 @@ async def startmsg(app, message):
     key = InlineKeyboardMarkup(
         [[InlineKeyboardButton("تاقیکردنەوە", switch_inline_query="سلاو @Hawaallll")]]
     )
-    await message.reply(text, reply_markup=key, quote=True)
+    await message.reply(text, reply_markup=key)
 
 
 @app.on_inline_query(filters.regex("@"))

@@ -114,7 +114,6 @@ async def send_welcome_message(chat: Chat, user_id: int, delete: bool = False):
             chat.id,
             text=text,
             reply_markup=keyb,
-            disable_web_page_preview=True,
         )
     elif welcome == "Photo":
         m = await app.send_photo(

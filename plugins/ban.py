@@ -805,7 +805,7 @@ async def invite(_, message):
         text = f"**لینکی گرووپ دروستکرا **\n\n{link}"
         if message.reply_to_message:
             await message.reply_to_message.reply_text(
-                text, disable_web_page_preview=True
+                text
             )
         else:
-            await message.reply_text(text, disable_web_page_preview=True)
+            await message.reply_text(text)

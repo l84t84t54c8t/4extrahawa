@@ -59,7 +59,6 @@ async def _check_member(app, message):
         try:
           sent_message = await message.reply_text(
               " {}\n\nYou haven't joined Our Channel.\nPlease join using below button and press the UnMute Me button to unmute yourself.".format(message.from_user.mention, channel, channel),
-              disable_web_page_preview=True,
              reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -109,9 +108,9 @@ async def config(app, message):
               channel_url = await app.export_chat_invite_link(int(input_str))
           else:
               channel_url = f"https://t.me/{input_str}"
-          await message.reply_text(f"✅ **Force Subscribe is Enabled**\n__Force Subscribe is enabled, all the group members have to subscribe this [channel]({channel_url}) in order to send messages in this group.__", disable_web_page_preview=True)
+          await message.reply_text(f"✅ **Force Subscribe is Enabled**\n__Force Subscribe is enabled, all the group members have to subscribe this [channel]({channel_url}) in order to send messages in this group.__")
         except UserNotParticipant:
-          await message.reply_text(f"❗ **Not an Admin in the Channel**\n__I am not an admin in the [channel]({channel_url}). Add me as a admin in order to enable ForceSubscribe.__", disable_web_page_preview=True)
+          await message.reply_text(f"❗ **Not an Admin in the Channel**\n__I am not an admin in the [channel]({channel_url}). Add me as a admin in order to enable ForceSubscribe.__")
         except (UsernameNotOccupied, PeerIdInvalid):
           await message.reply_text(f"❗ **Invalid Channel Username/ID.**")
         except Exception as err:
@@ -123,7 +122,7 @@ async def config(app, message):
             channel_url = await client.export_chat_invite_link(int(input_str))
         else:
             channel_url = f"https://t.me/{my_channel}"
-        await message.reply_text(f"✅ **Force Subscribe is enabled in this chat.**\n__For this [Channel]({channel_url})__", disable_web_page_preview=True)
+        await message.reply_text(f"✅ **Force Subscribe is enabled in this chat.**\n__For this [Channel]({channel_url})__")
       else:
         await message.reply_text("❌ **Force Subscribe is disabled in this chat.**")
   else:

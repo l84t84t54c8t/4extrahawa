@@ -211,7 +211,6 @@ async def vgdg(client, message):
         reply_markup=InlineKeyboardMarkup(
             [[InlineKeyboardButton("نوێکارییەکانی هەواڵ 🍻", url=f"t.me/Haawall")]]
         ),
-        disable_web_page_preview=True,
     )
 
 

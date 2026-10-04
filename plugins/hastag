@@ -12,7 +12,7 @@ async def hastag(bot, message):
     except IndexError:
         return await message.reply_text("Example:\n\n/hastag python")
 
-    await message.reply_text(f"ʜᴇʀᴇ ɪs ʏᴏᴜʀ  ʜᴀsᴛᴀɢ :\n<pre>{res}</pre>", quote=True)
+    await message.reply_text(f"ʜᴇʀᴇ ɪs ʏᴏᴜʀ  ʜᴀsᴛᴀɢ :\n<pre>{res}</pre>")
 
 
 __MODULE__ = "Hᴀsʜᴛᴀɢ"

@@ -169,13 +169,13 @@ async def gemini_dm_handler(client, message):
             formatted_response = format_response(truncate_text(x))
             if image_url:
                 await message.reply_photo(
-                    image_url, caption=formatted_response, quote=True
+                    image_url, caption=formatted_response
                 )
             else:
-                await message.reply_text(formatted_response, quote=True)
+                await message.reply_text(formatted_response)
         else:
             await message.reply_text(
-                to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True
+                to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ")
             )
     except requests.exceptions.RequestException as e:
         pass

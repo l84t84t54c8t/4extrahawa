@@ -60,12 +60,11 @@ async def add_chat(client, m):
         else:
             await tt.reply(
                 f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل، ستیکەر) ♥⚡**",
-                quote=True,
             )
             return
 
         await save_chat_data(cid, data)
-        await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
+        await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**")
 
 
 @app.on_message(filters.regex("^چاتەکان$"), group=121)

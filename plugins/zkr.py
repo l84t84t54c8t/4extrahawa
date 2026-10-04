@@ -130,7 +130,7 @@ azkar1 = [
 @app.on_message(filters.command(["زکری بەیانیان", "زکر"], ""))
 async def axkary(c, msg):
     bar = random.choice(azkar1)
-    await msg.reply_text(f"**{bar}**", disable_web_page_preview=True)
+    await msg.reply_text(f"**{bar}**")
 
 
 chat = []

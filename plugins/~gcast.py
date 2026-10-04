@@ -332,4 +332,4 @@ async def prolists_handler(client: Client, message: Message):
                 f"Added on • {added_time}\n"
                 f"Added by • {added_by}\n\n"
             )
-    await message.reply_text(pro_list_text, disable_web_page_preview=True)
+    await message.reply_text(pro_list_text)

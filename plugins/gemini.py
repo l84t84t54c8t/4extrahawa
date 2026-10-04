@@ -27,7 +27,7 @@ async def gemini_handler(client, message):
         await app.send_chat_action(message.chat.id, ChatAction.TYPING)
         x = response["results"]
         if x:
-            await message.reply_text(x, quote=True)
+            await message.reply_text(x)
         else:
             await message.reply_text("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ")
     except requests.exceptions.RequestException as e:

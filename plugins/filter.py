@@ -181,7 +181,6 @@ async def filters_response(_, message):
                 await message.reply_text(
                     text=data,
                     reply_markup=keyb,
-                    disable_web_page_preview=True,
                 )
             elif file_id:  # Only check for file_id if data_type requires it
                 if data_type == "sticker":

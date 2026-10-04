@@ -29,7 +29,6 @@ async def must_join_channel(app: Client, msg: Message):
                         reply_markup=InlineKeyboardMarkup(
                             [[InlineKeyboardButton(f"• {name1} •", url=link1)]]
                         ),
-                        disable_web_page_preview=True,
                     )
                     await msg.stop_propagation()  # Stop further message processing
                 except ChatWriteForbidden:
@@ -56,7 +55,6 @@ async def must_join_channel(app: Client, msg: Message):
                         reply_markup=InlineKeyboardMarkup(
                             [[InlineKeyboardButton(f"• {name2} •", url=link2)]]
                         ),
-                        disable_web_page_preview=True,
                     )
                     await msg.stop_propagation()  # Stop further message processing
                 except ChatWriteForbidden:

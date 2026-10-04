@@ -26,12 +26,10 @@ async def active_afk(_, message: Message):
             if afktype == "text":
                 send = await message.reply_text(
                     f"**{message.from_user.first_name}** ɪs ʙᴀᴄᴋ ᴏɴʟɪɴᴇ ᴀɴᴅ ᴡᴀs ᴀᴡᴀʏ ғᴏʀ {seenago}",
-                    disable_web_page_preview=True,
                 )
             if afktype == "text_reason":
                 send = await message.reply_text(
                     f"**{message.from_user.first_name}** ɪs ʙᴀᴄᴋ ᴏɴʟɪɴᴇ ᴀɴᴅ ᴡᴀs ᴀᴡᴀʏ ғᴏʀ {seenago}\n\nʀᴇᴀsᴏɴ: `{reasonafk}`",
-                    disable_web_page_preview=True,
                 )
             if afktype == "animation":
                 if str(reasonafk) == "None":
@@ -58,7 +56,6 @@ async def active_afk(_, message: Message):
         except Exception:
             send = await message.reply_text(
                 f"**{message.from_user.first_name}** ɪs ʙᴀᴄᴋ ᴏɴʟɪɴᴇ",
-                disable_web_page_preview=True,
             )
 
     if len(message.command) == 1 and not message.reply_to_message:
@@ -367,7 +364,7 @@ async def chat_watcher_func(_, message):
             j += 1
     if msg != "":
         try:
-            send = await message.reply_text(msg, disable_web_page_preview=True)
+            send = await message.reply_text(msg)
         except BaseException:
             return
 
