@@ -21,7 +21,6 @@ async def google(bot, message):
             txt += f"\n\n[❍ {result.title}]({result.url})\n<b>{result.description}</b>"
         await b.edit(
             txt,
-            disable_web_page_preview=True,
         )
     except Exception as e:
         await b.edit(e)
