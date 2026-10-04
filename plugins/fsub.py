@@ -16,8 +16,6 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     Message,
 )
-from pyromod import listen  # for ask
-
 
 # Set up basic logging
 logging.basicConfig(
